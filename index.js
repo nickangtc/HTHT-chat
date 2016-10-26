@@ -8,15 +8,6 @@ var server = http.createServer(app)
 var io = require('socket.io')(server)
 var connections = [];
 
-
-function findConnection (id) {
-  return connections.filter(function (c) { return c.id === id })[0]
-}
-// start ther server listening
-server.listen(port, () => {
-  console.log('Server listening on port: ', server.address().port)
-})
-
 // serve static files with express
 app.use(express.static('./public'));
 
@@ -47,6 +38,13 @@ app.get('/discuss/:id', function (req, res) {
 //   socket.join('some room');
 // });
 
+function findConnection (id) {
+  return connections.filter(function (c) { return c.id === id })[0]
+}
+// start ther server listening
+server.listen(port, () => {
+  console.log('Server listening on port: ', server.address().port)
+});
 
 // listen for a socket io connection event
 io.on('connection', (socket) => {
@@ -63,7 +61,7 @@ io.on('connection', (socket) => {
       if (connection.user) {
         socket.broadcast.emit('left', connection.user)
         socket.broadcast.emit('online', connections)
-        console.log(`## ${connection.user.name}(${connection.id}) disconnected. Remaining: ${connections.length}.`)
+        console.log(`## ${connection.user}(${connection.id}) disconnected. Remaining: ${connections.length}.`)
       } else {
         console.log(`## Connection (${connection.id}) (${socket.id}) disconnected. Remaining: ${connections.length}.`)
       }
@@ -72,17 +70,17 @@ io.on('connection', (socket) => {
   })
 
   // listen for a chat message from a socket and broadcast it
-  socket.on('join', (user) => {
+  socket.on('join', (username) => {
     // attach the new user to the connection object
     let connection = findConnection(socket.id)
-    connection.user = user
+    connection.user = username
     // emit welcome message to new user
     socket.emit('connect');
     // broadcast their arrival to everyone else
-    socket.broadcast.emit('joined', user)
+    socket.broadcast.emit('newcomer', username)
     io.sockets.emit('online', connections)
 
-    console.log(`## ${connection.user.name} joined the chat on (${connection.id}).`)
+    console.log(`## ${connection.user} joined the chat on (${connection.id}).`)
   })
 
   // broadcast chat message to other users
@@ -91,6 +89,6 @@ io.on('connection', (socket) => {
     // broadcast to other users
     socket.broadcast.emit('chat', {message: msg, user: connection.user})
 
-    console.log(`## ${connection.user.name} said: ${msg}`)
+    console.log(`## ${connection.user} said: ${msg}`);
   })
 })
