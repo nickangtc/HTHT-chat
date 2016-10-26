@@ -7,7 +7,7 @@ const port = process.env.PORT || 3000
 const server = http.createServer(app)
 const io = require('socket.io')(server)
 const connections = [];
-var ejsLayouts = require('express-ejs-layouts');
+// var ejsLayouts = require('express-ejs-layouts');
 
 function findConnection (id) {
   return connections.filter(function (c) { return c.id === id })[0]
@@ -20,16 +20,35 @@ server.listen(port, () => {
 // serve static files with express
 app.use(express.static('./public'));
 
-// app.set('view engine', 'ejs');
+app.set('view engine', 'ejs');
 // app.use(ejsLayouts);
 
-// app.get('/', function (req, res) {
-//   res.render('index');
+app.get('/', function (req, res) {
+  res.render('index');
+});
+
+app.get('/discuss/:id', function (req, res) {
+  console.log("RENDERING")
+  res.render('chatroom');
+});
+
+app.post('/abc', function (req, res) {
+  console.log("RECEIVED POST ON BACKEND")
+  res.json("OK RECEIVED")
+});
+
+// custom namespaces for each unique chatroom
+// var nsp = io.of('/topic-id');
+// nsp.on('connection', function(socket){
+//   console.log('someone connected'):
 // });
+// nsp.emit('hi', 'everyone!');
+// io.to('some room').emit('some event');
 //
-// app.get('/discuss', function (req, res) {
-//   res.render('chatroom');
+// io.on('connection', function(socket){
+//   socket.join('some room');
 // });
+
 
 // listen for a socket io connection event
 io.on('connection', (socket) => {
@@ -60,7 +79,7 @@ io.on('connection', (socket) => {
     let connection = findConnection(socket.id)
     connection.user = user
     // emit welcome message to new user
-    socket.emit('welcome', `Hi ${user.name}, welcome to Simple Chat!`)
+    socket.emit('connect');
     // broadcast their arrival to everyone else
     socket.broadcast.emit('joined', user)
     io.sockets.emit('online', connections)

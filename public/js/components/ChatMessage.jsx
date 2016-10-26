@@ -1,5 +1,3 @@
-import React from 'react';
-
 const ChatMessage = React.createClass({
   render: function () {
     return (

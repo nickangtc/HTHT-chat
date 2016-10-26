@@ -9,54 +9,43 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" media="screen" title="no title">
     <link rel="stylesheet" href="css/style.css">
 
+    <!-- JQuery -->
+    <script src="//code.jquery.com/jquery-1.11.1.js"></script>
+
+    <!-- React -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react-dom.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0-alpha1/JSXTransformer.js"></script>
+    <script src="https://unpkg.com/react-router/umd/ReactRouter.min.js"></script>
+
+    <!-- Socket.io -->
+    <script src="//cdn.socket.io/socket.io-1.4.5.js"></script>
+
+
   </head>
   <body>
 
-    <%- body %>
+    <div id="root"></div>
 
-    <!-- REACT.JS -->
+    <script src="./js/data.js" />
+
+    <!-- REACT JS -->
+
+    <script src="./js/components/AppRoutes.jsx" type="text/jsx"></script>
+
+    <script src="./js/components/IndexPage.jsx" type="text/jsx"></script>
+    <script src="./js/components/ChatPage.jsx" type="text/jsx"></script>
     <script src="./js/components/TopicsContainer.jsx" type="text/jsx"></script>
     <script src="./js/components/TopicItem.jsx" type="text/jsx"></script>
     <script src="./js/components/NewTopicContainer.jsx" type="text/jsx"></script>
     <script src="./js/components/NewTopicForm.jsx" type="text/jsx"></script>
-    <script src="./js/components/ChatContainer.jsx" type="text/jsx"></script>
+
     <script src="./js/components/ChatMessage.jsx" type="text/jsx"></script>
 
-
     <script type="text/jsx">
-      var topics = [
-        {
-          id: 1,
-          title: 'what is the meaning of life?',
-          headCount: 2
-        },
-        {
-          id: 2,
-          title: 'the maddest US presidential elections ever',
-          headCount: 1
-        },
-        {
-          id: 3,
-          title: 'the beauty of trees in cities',
-          headCount: 3
-        }
-      ];
-
-      ReactDOM.render(<TopicsContainer topics={topics} />, document.getElementById("topics"));
-      ReactDOM.render(<NewTopicContainer />, document.getElementById("create-topic"));
-
-
+      ReactDOM.render(( <IndexPage />), document.getElementById('root'));
     </script>
 
 
-  <!-- Socket.io -->
-  <script src="//cdn.socket.io/socket.io-1.4.5.js"></script>
-  <!-- JQuery -->
-  <script src="//code.jquery.com/jquery-1.11.1.js"></script>
-  <!-- main client js -->
-  <script src="js/client.js"></script>
   </body>
 </html>
