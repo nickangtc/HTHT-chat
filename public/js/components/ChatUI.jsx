@@ -5,6 +5,7 @@ const ChatUI = React.createClass({
       users: [],
       formIsDisabled: true,
       socketConnected: false,
+      socket: '',
       message: '',
       messages: [
         {
@@ -25,14 +26,17 @@ const ChatUI = React.createClass({
   },
   messageRecieve: function (msg) {
     var messages = this.state.messages;
-    messages.push(msg);
+    messages.unshift({
+      name: msg.user,
+      msg: msg.message
+    });
     this.setState({ messages: messages });
   },
   userJoined: function (user) {
     var users = this.state.users;
     var messages = this.state.messages;
-    users.push(user);
-    messages.push({
+    users.unshift(user);
+    messages.unshift({
       name: '',
       msg: user + ' joined'
     });
@@ -42,7 +46,7 @@ const ChatUI = React.createClass({
     var users = this.state.users;
     var messages = this.state.messages;
     users.splice(users.indexOf(user), 1);
-    messages.push({
+    messages.unshift({
       name: '',
       msg: user + ' left'
     });
@@ -54,12 +58,18 @@ const ChatUI = React.createClass({
   handleMsgInput: function (e) {
     this.setState({ message: e.target.value });
   },
-  sendMsg: function () {
+  sendMsg: function (e) {
+    e.preventDefault();
+
     var msg = this.state.message;
+    var socket = this.state.socket;
     socket.emit('chat', msg);
 
     var messages = this.state.messages;
-    messages.push(msg);
+    messages.unshift({
+      name: 'you',
+      msg: msg
+    });
     this.setState({
       messages: messages,
       message: ''
@@ -76,7 +86,10 @@ const ChatUI = React.createClass({
     e.preventDefault();
 
     var socket = io(window.location.host);
-    this.setState({ socketConnected: true });
+    this.setState({
+      socketConnected: true,
+      socket: socket
+    });
     this.initSocketListeners(socket);
 
     console.log('Joining chat with name: ', this.state.username)
