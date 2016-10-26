@@ -11,12 +11,10 @@
 
     <!-- JQuery -->
     <script src="//code.jquery.com/jquery-1.11.1.js"></script>
-
     <!-- React -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react-dom.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0-alpha1/JSXTransformer.js"></script>
-    <script src="https://unpkg.com/react-router/umd/ReactRouter.min.js"></script>
 
     <!-- Socket.io -->
     <script src="//cdn.socket.io/socket.io-1.4.5.js"></script>
@@ -25,27 +23,22 @@
   </head>
   <body>
 
-    <div id="root"></div>
+    <script src="/js/components/PageNotFound.jsx" type="text/jsx"></script>
+    <script src="/js/components/IndexPage.jsx" type="text/jsx"></script>
+    <script src="/js/components/TopicsContainer.jsx" type="text/jsx"></script>
+    <script src="/js/components/TopicItem.jsx" type="text/jsx"></script>
+    <script src="/js/components/NewTopicContainer.jsx" type="text/jsx"></script>
+    <script src="/js/components/NewTopicForm.jsx" type="text/jsx"></script>
 
-    <script src="./js/data.js" />
+
+
+    <div id="root"></div>
 
     <!-- REACT JS -->
 
-    <script src="./js/components/AppRoutes.jsx" type="text/jsx"></script>
-
-    <script src="./js/components/IndexPage.jsx" type="text/jsx"></script>
-    <script src="./js/components/ChatPage.jsx" type="text/jsx"></script>
-    <script src="./js/components/TopicsContainer.jsx" type="text/jsx"></script>
-    <script src="./js/components/TopicItem.jsx" type="text/jsx"></script>
-    <script src="./js/components/NewTopicContainer.jsx" type="text/jsx"></script>
-    <script src="./js/components/NewTopicForm.jsx" type="text/jsx"></script>
-
-    <script src="./js/components/ChatMessage.jsx" type="text/jsx"></script>
-
     <script type="text/jsx">
-      ReactDOM.render(( <IndexPage />), document.getElementById('root'));
+      ReactDOM.render(<IndexPage />, document.getElementById('root'));
     </script>
-
 
   </body>
 </html>

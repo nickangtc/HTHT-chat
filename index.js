@@ -1,13 +1,13 @@
 'use strict'
 
-const express = require('express')
-const http = require('http')
-const app = express()
-const port = process.env.PORT || 3000
-const server = http.createServer(app)
-const io = require('socket.io')(server)
-const connections = [];
-// var ejsLayouts = require('express-ejs-layouts');
+var express = require('express')
+var http = require('http')
+var app = express()
+var port = process.env.PORT || 3000
+var server = http.createServer(app)
+var io = require('socket.io')(server)
+var connections = [];
+
 
 function findConnection (id) {
   return connections.filter(function (c) { return c.id === id })[0]
@@ -21,20 +21,16 @@ server.listen(port, () => {
 app.use(express.static('./public'));
 
 app.set('view engine', 'ejs');
-// app.use(ejsLayouts);
+
 
 app.get('/', function (req, res) {
+  console.log("Rendering index.ejs")
   res.render('index');
 });
 
 app.get('/discuss/:id', function (req, res) {
-  console.log("RENDERING")
+  console.log("Rendering chatroom.ejs")
   res.render('chatroom');
-});
-
-app.post('/abc', function (req, res) {
-  console.log("RECEIVED POST ON BACKEND")
-  res.json("OK RECEIVED")
 });
 
 // custom namespaces for each unique chatroom
