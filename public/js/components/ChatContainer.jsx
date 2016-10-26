@@ -1,10 +1,9 @@
-const ChatUI = React.createClass({
+const ChatContainer = React.createClass({
   render: function () {
     return (
       <div>
-        CHAT UI
+        <ChatMessage />
       </div>
-
     );
   }
 });

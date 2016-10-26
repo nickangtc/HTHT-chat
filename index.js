@@ -29,8 +29,10 @@ app.get('/', function (req, res) {
 });
 
 app.get('/discuss/:id', function (req, res) {
-  console.log("Rendering chatroom.ejs")
-  res.render('chatroom');
+  console.log("Rendering chatroom.ejs");
+
+  console.log(req.query);
+  res.render('chatroom', req.query );
 });
 
 // custom namespaces for each unique chatroom
