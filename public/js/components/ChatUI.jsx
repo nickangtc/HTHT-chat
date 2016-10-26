@@ -74,10 +74,8 @@ const ChatUI = React.createClass({
       messages: messages,
       message: ''
     });
-  },
-  updateDOM: function (data) {
-    console.log(data);
-    $('#inputField').empty();
+
+    $('#inputField').val('');
   },
   handleNameInput: function (e) {
     this.setState({ username: e.target.value });
@@ -121,7 +119,7 @@ const ChatUI = React.createClass({
             <div className="col-md-offset-2"></div>
             <div className="col-md-8">
               <form className="form-inline">
-                <input id="inputField" type="text" placeholder="type a message" onChange={this.handleMsgInput} className="form-control" />
+                <input id="inputField" type="text" placeholder="type a message" onChange={this.handleMsgInput} className="form-control" autoComplete='off' />
                 <button onClick={this.sendMsg} className="btn btn-success">Send</button>
               </form>
             </div>
@@ -140,7 +138,7 @@ const ChatUI = React.createClass({
           <div className="col-md-offset-2"></div>
           <div className="col-md-8">
             <form className="form-inline">
-              <input id="inputField" type="text" placeholder="pick a username" onChange={this.handleNameInput} className="form-control" />
+              <input id="inputField" type="text" placeholder="pick a username" onChange={this.handleNameInput} className="form-control" autoComplete='off' />
               <button onClick={this.connectSocket} className="btn btn-success"> Join </button>
             </form>
           </div>
