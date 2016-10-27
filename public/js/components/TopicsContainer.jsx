@@ -3,7 +3,7 @@ const TopicsContainer = React.createClass({
     var topics = [
       {
         id: 1,
-        title: 'what is the meaning of life?',
+        title: 'will we see AI in our lifetime?',
         headCount: 2
       },
       {

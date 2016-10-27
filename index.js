@@ -8,12 +8,11 @@ var server = http.createServer(app)
 var io = require('socket.io')(server)
 var connections = [];
 
-// serve static files with express
+// SERVER CONFIG
 app.use(express.static('./public'));
-
 app.set('view engine', 'ejs');
 
-
+// SERVER ROUTES
 app.get('/', function (req, res) {
   console.log("Rendering index.ejs")
   res.render('index');
@@ -26,31 +25,65 @@ app.get('/discuss/:id', function (req, res) {
   res.render('chatroom', req.query );
 });
 
-// custom namespaces for each unique chatroom
-// var nsp = io.of('/topic-id');
-// nsp.on('connection', function(socket){
-//   console.log('someone connected'):
-// });
-// nsp.emit('hi', 'everyone!');
-// io.to('some room').emit('some event');
-//
-// io.on('connection', function(socket){
-//   socket.join('some room');
-// });
 
+// SOCKET.IO
 function findConnection (id) {
   return connections.filter(function (c) { return c.id === id })[0]
 }
-// start ther server listening
+// start server listening
 server.listen(port, () => {
   console.log('Server listening on port: ', server.address().port)
 });
+
+
+// custom namespaces for each unique chatroom
+// var channel1 = io.of('/channelid');
+// channel1.on('connection', function(socket){
+//   console.log('someone connected'):
+// });
+// channel1.emit('hi', 'everyone!');
+
+
 
 // listen for a socket io connection event
 io.on('connection', (socket) => {
   // new connection, save the socket
   connections.push({id: socket.id})
   console.log(`## New connection (${socket.id}). Total: ${connections.length}.`)
+
+  // find or create chatroom
+  socket.on('join or create room', function (data) {
+
+    socket.join(data.chatroomID);
+
+    // attach the new user to the connection object
+    let connection = findConnection(socket.id)
+    connection.user = data.username;
+    // emit welcome message to new user
+    socket.emit('connected');
+    // broadcast their arrival to everyone else
+    io.to(data.chatroomID).emit('newcomer', data.username);
+    socket.broadcast.to(data.chatroomID).emit('online', connections);
+
+
+    io.to(data.chatroomID).emit('some event');
+
+    console.log(`## ${connection.user} joined the chat on (${connection.id}).`)
+  });
+
+  // // listen for a chat message from a socket and broadcast it
+  // socket.on('join', (data) => {
+  //   // attach the new user to the connection object
+  //   let connection = findConnection(socket.id)
+  //   connection.user = data.username;
+  //   // emit welcome message to new user
+  //   socket.emit('connect');
+  //   // broadcast their arrival to everyone else
+  //   socket.broadcast.to(connection).emit('newcomer', data.username)
+  //   io.sockets.emit('online', connections)
+  //
+  //   console.log(`## ${connection.user} joined the chat on (${connection.id}).`)
+  // });
 
   // listen for a disconnect event
   socket.once('disconnect', () => {
@@ -59,36 +92,22 @@ io.on('connection', (socket) => {
     if (connection) {
       connections.splice(connections.indexOf(connection), 1)
       if (connection.user) {
-        socket.broadcast.emit('left', connection.user)
-        socket.broadcast.emit('online', connections)
+        socket.broadcast.to(connection).emit('left', connection.user)
+        socket.broadcast.to(connection).emit('online', connections)
         console.log(`## ${connection.user}(${connection.id}) disconnected. Remaining: ${connections.length}.`)
       } else {
         console.log(`## Connection (${connection.id}) (${socket.id}) disconnected. Remaining: ${connections.length}.`)
       }
     }
     socket.disconnect()
-  })
-
-  // listen for a chat message from a socket and broadcast it
-  socket.on('join', (username) => {
-    // attach the new user to the connection object
-    let connection = findConnection(socket.id)
-    connection.user = username
-    // emit welcome message to new user
-    socket.emit('connect');
-    // broadcast their arrival to everyone else
-    socket.broadcast.emit('newcomer', username)
-    io.sockets.emit('online', connections)
-
-    console.log(`## ${connection.user} joined the chat on (${connection.id}).`)
-  })
+  });
 
   // broadcast chat message to other users
-  socket.on('chat', (msg) => {
+  socket.on('chat', (data) => {
     let connection = findConnection(socket.id)
     // broadcast to other users
-    socket.broadcast.emit('chat', {message: msg, user: connection.user})
+    socket.broadcast.to(data.chatroomID).emit('chat', {message: data.msg, user: connection.user})
 
-    console.log(`## ${connection.user} said: ${msg}`);
+    console.log(`## ${connection.user} said: ${data.msg}`);
   })
 })

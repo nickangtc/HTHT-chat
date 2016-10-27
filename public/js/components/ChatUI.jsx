@@ -1,6 +1,7 @@
 const ChatUI = React.createClass({
   getInitialState: function () {
     return {
+      chatroomID: '',
       username: '',
       users: [],
       formIsDisabled: true,
@@ -19,10 +20,19 @@ const ChatUI = React.createClass({
       ]
     }
   },
+  componentWillMount: function () {
+    // get page id from url
+    var url = window.location.pathname.toString();
+    var startSliceIndex = url.indexOf('/', 1) + 1;
+    var id = url.slice(startSliceIndex);
+    this.setState({ chatroomID: id });
+  },
   initSocketListeners: function (socket) {
     socket.on('chat', this.messageRecieve);
     socket.on('newcomer', this.userJoined);
     socket.on('left', this.userLeft);
+    socket.on('connected', function () { console.log('Connected to Chat Socket') });
+    socket.on('disconnect', function () { console.log('Disconnected from Chat Socket') });
   },
   messageRecieve: function (msg) {
     var messages = this.state.messages;
@@ -61,14 +71,17 @@ const ChatUI = React.createClass({
   sendMsg: function (e) {
     e.preventDefault();
 
-    var msg = this.state.message;
     var socket = this.state.socket;
-    socket.emit('chat', msg);
+    var data = {
+      msg: this.state.message,
+      chatroomID: this.state.chatroomID
+    };
+    socket.emit('chat', data);
 
     var messages = this.state.messages;
     messages.unshift({
       name: 'you',
-      msg: msg
+      msg: this.state.message
     });
     this.setState({
       messages: messages,
@@ -80,9 +93,10 @@ const ChatUI = React.createClass({
   handleNameInput: function (e) {
     this.setState({ username: e.target.value });
   },
-  connectSocket: function (e) {
+  connectToSocket: function (e) {
     e.preventDefault();
 
+    // connect to chat socket with chatroomID
     var socket = io(window.location.host);
     this.setState({
       socketConnected: true,
@@ -90,15 +104,10 @@ const ChatUI = React.createClass({
     });
     this.initSocketListeners(socket);
 
-    console.log('Joining chat with name: ', this.state.username)
-    socket.emit('join', this.state.username);
-
-    // handle connectting to and disconnecting from the chat server
-    socket.on('connect', function () {
-      console.log('Connected to Chat Socket')
-    });
-    socket.on('disconnect', function () {
-      console.log('Disconnected from Chat Socket')
+    console.log('Joining chatroom', this.state.chatroomID, 'with name: ', this.state.username)
+    socket.emit('join or create room', {
+      username: this.state.username,
+      chatroomID: this.state.chatroomID
     });
   },
 
@@ -139,7 +148,7 @@ const ChatUI = React.createClass({
           <div className="col-md-8">
             <form className="form-inline">
               <input id="inputField" type="text" placeholder="pick a username" onChange={this.handleNameInput} className="form-control" autoComplete='off' />
-              <button onClick={this.connectSocket} className="btn btn-success"> Join </button>
+              <button onClick={this.connectToSocket} className="btn btn-success"> Join </button>
             </form>
           </div>
           <div className="col-md-offset-2"></div>
