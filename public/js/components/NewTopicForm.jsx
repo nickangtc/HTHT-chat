@@ -1,27 +1,25 @@
 const NewTopicForm = React.createClass({
   getInitialState: function () {
     return {
-      username: '',
       topic: ''
     }
-  },
-  handleNameInput: function (e) {
-    this.setState({ username: e.target.value });
   },
   handleTopicInput: function (e) {
     this.setState({ topic: e.target.value });
   },
-  submitCreate: function () {
+  handleCreate: function (e) {
+    e.preventDefault();
     $.ajax({
       method: 'POST',
       url: '/topics',
       data: {
         title: this.state.topic
       },
-      success: function () {
-        window.location.href = window.location.host + '/' + this.state.topic;
+      success: function (redirectPath) {
+        console.log('Post successful', redirectPath);
+        window.location.href += redirectPath;
       }
-    })
+    });
   },
   render: function () {
     return (
@@ -33,14 +31,10 @@ const NewTopicForm = React.createClass({
         <div className="col-md-12">
           <form className="form-inline">
             <div className="form-group">
-              <label className="sr-only" htmlFor="username">username</label>
-              <input id="username" type="text" onChange={this.handleNameInput} placeholder="username" className="form-control" autoComplete='off' />
-            </div>
-            <div className="form-group">
               <label className="sr-only" htmlFor="topic">topic</label>
-              <input id="topic" type="text" onChange={this.handleTopicInput} placeholder="how will AI co-exist with humanity 20 years from now?" className="form-control" autoComplete='off' />
+              <input size="48" id="topic" type="text" onChange={this.handleTopicInput} placeholder="how will AI co-exist with humanity 20 years from now?" className="form-control" autoComplete='off' />
             </div>
-            <button onClick={this.submitCreate} className="btn btn-success">make room</button>
+            <button onClick={this.handleCreate} className="btn btn-primary">make room</button>
           </form>
         </div>
 

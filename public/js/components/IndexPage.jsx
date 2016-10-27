@@ -5,11 +5,12 @@ const IndexPage = React.createClass({
       <div className="container">
 
         <div className="row">
-          <div className="col-md-offset-3"></div>
-          <div className="col-md-6">
-            <h2>reson8</h2>
+          <div className="col-md-offset-2"></div>
+          <div className="col-md-8">
+            <h2>parsun</h2>
+            <p>party of five or less, talking about anything under the sun</p>
           </div>
-          <div className="col-md-offset-3"></div>
+          <div className="col-md-offset-2"></div>
         </div>
 
         <div className="row">

@@ -51,20 +51,21 @@ app.get('/discuss/:id', function (req, res) {
 });
 
 app.get('/topics', function (req, res) {
-  console.log("Dispatching topics from server", TOPICS);
+  console.log("Dispatching topics from server GET TOPICS");
   res.send(TOPICS);
 });
 
 app.post('/topics', function (req, res) {
-  console.log("Received topic from front-end", req);
-  var newTopic = req;
+  console.log("Received topic from front-end");
+  var newTopic = req.body;
   newTopic.id = TOPICS.length + 1;
+  newTopic.headCount = 1;
   TOPICS.push(newTopic);
 
-  // console.log("Dispatching topics from server", TOPICS);
-  res.send(TOPICS);
+  console.log('Redirecting to', '/discuss/' + newTopic.id + '?topic=' + req.body.title);
+  var redirectPath = 'discuss/' + newTopic.id + '?topic=' + encodeURIComponent(req.body.title);
+  res.send(redirectPath);
 });
-
 
 
 // SOCKET.IO
