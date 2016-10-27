@@ -8,16 +8,7 @@ const ChatUI = React.createClass({
       socketConnected: false,
       socket: '',
       message: '',
-      messages: [
-        {
-          name: 'alex',
-          msg: 'hey everyone'
-        },
-        {
-          name: 'joanna',
-          msg: 'Hey Alex! So, what do you think about the topic at hand?'
-        }
-      ]
+      messages: []
     }
   },
   componentWillMount: function () {

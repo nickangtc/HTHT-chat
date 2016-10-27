@@ -22,14 +22,6 @@ const IndexPage = React.createClass({
           <NewTopicContainer />
         </div>
 
-        <main>
-          {this.props.children}
-        </main>
-
-        <a href="/abc">CLICK</a>
-
-        <button onClick={this.postRequest}>post</button>
-
       </div>
     );
   }

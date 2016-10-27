@@ -1,24 +1,21 @@
 const TopicsContainer = React.createClass({
+  getInitialState: function () {
+    return {
+      topics: []
+    }
+  },
+  componentWillMount: function () {
+    $.ajax({
+      method: 'GET',
+      url: '/topics',
+      success: function (data) {
+        this.setState({ topics: data })
+      }.bind(this)
+    });
+  },
   render: function () {
-    var topics = [
-      {
-        id: 1,
-        title: 'will we see AI in our lifetime?',
-        headCount: 2
-      },
-      {
-        id: 2,
-        title: 'the maddest US presidential elections ever',
-        headCount: 1
-      },
-      {
-        id: 3,
-        title: 'the beauty of trees in cities',
-        headCount: 3
-      }
-    ];
 
-    var result = topics.map(function(topic) {
+    var result = this.state.topics.map(function(topic) {
       return (
         <TopicItem key={topic.id} topic={topic} />
       );

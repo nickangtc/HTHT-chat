@@ -1,5 +1,28 @@
 const NewTopicForm = React.createClass({
-
+  getInitialState: function () {
+    return {
+      username: '',
+      topic: ''
+    }
+  },
+  handleNameInput: function (e) {
+    this.setState({ username: e.target.value });
+  },
+  handleTopicInput: function (e) {
+    this.setState({ topic: e.target.value });
+  },
+  submitCreate: function () {
+    $.ajax({
+      method: 'POST',
+      url: '/topics',
+      data: {
+        title: this.state.topic
+      },
+      success: function () {
+        window.location.href = window.location.host + '/' + this.state.topic;
+      }
+    })
+  },
   render: function () {
     return (
       <div className="row">
@@ -11,13 +34,13 @@ const NewTopicForm = React.createClass({
           <form className="form-inline">
             <div className="form-group">
               <label className="sr-only" htmlFor="username">username</label>
-              <input  type="text" className="form-control" id="username" placeholder="username" />
+              <input id="username" type="text" onChange={this.handleNameInput} placeholder="username" className="form-control" autoComplete='off' />
             </div>
             <div className="form-group">
               <label className="sr-only" htmlFor="topic">topic</label>
-              <input type="text" className="form-control" id="topic" placeholder="AI in the next 10 years" />
+              <input id="topic" type="text" onChange={this.handleTopicInput} placeholder="how will AI co-exist with humanity 20 years from now?" className="form-control" autoComplete='off' />
             </div>
-            <button onSubmit={this.submitJoinRequest} className="btn btn-success">make room</button>
+            <button onClick={this.submitCreate} className="btn btn-success">make room</button>
           </form>
         </div>
 
