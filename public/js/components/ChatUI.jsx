@@ -72,11 +72,8 @@ const ChatUI = React.createClass({
     e.preventDefault();
 
     var socket = this.state.socket;
-    var data = {
-      msg: this.state.message,
-      chatroomID: this.state.chatroomID
-    };
-    socket.emit('chat', data);
+    var msg = this.state.message;
+    socket.emit('chat', msg);
 
     var messages = this.state.messages;
     messages.unshift({

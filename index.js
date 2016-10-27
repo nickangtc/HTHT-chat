@@ -28,6 +28,7 @@ app.get('/discuss/:id', function (req, res) {
 
 // SOCKET.IO
 function findConnection (id) {
+  console.log('connections:', connections);
   return connections.filter(function (c) { return c.id === id })[0]
 }
 // start server listening
@@ -56,9 +57,10 @@ io.on('connection', (socket) => {
 
     socket.join(data.chatroomID);
 
-    // attach the new user to the connection object
+    // attach the new user and her chatroomID to the connection object
     let connection = findConnection(socket.id)
     connection.user = data.username;
+    connection.chatroomID = data.chatroomID;
     // emit welcome message to new user
     socket.emit('connected');
     // broadcast their arrival to everyone else
@@ -103,11 +105,11 @@ io.on('connection', (socket) => {
   });
 
   // broadcast chat message to other users
-  socket.on('chat', (data) => {
+  socket.on('chat', (msg) => {
     let connection = findConnection(socket.id)
     // broadcast to other users
-    socket.broadcast.to(data.chatroomID).emit('chat', {message: data.msg, user: connection.user})
+    socket.broadcast.to(connection.chatroomID).emit('chat', {message: msg, user: connection.user})
 
-    console.log(`## ${connection.user} said: ${data.msg}`);
+    console.log(`## ${connection.user} said: ${msg}`);
   })
 })
