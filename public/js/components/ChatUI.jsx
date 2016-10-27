@@ -1,3 +1,5 @@
+// TODO: updateOnlineWidget and render <WhosOnlineWidget />
+
 const ChatUI = React.createClass({
   getInitialState: function () {
     return {
@@ -17,11 +19,17 @@ const ChatUI = React.createClass({
     var startSliceIndex = url.indexOf('/', 1) + 1;
     var id = url.slice(startSliceIndex);
     this.setState({ chatroomID: id });
+
+    // on any keypress, autofocus to input field
+    $(document).on("keypress", function() {
+      $("#inputField").focus();
+    });
   },
   initSocketListeners: function (socket) {
     socket.on('chat', this.messageRecieve);
     socket.on('newcomer', this.userJoined);
     socket.on('left', this.userLeft);
+    socket.on('online', this.updateOnlineWidget);
     socket.on('connected', function () { console.log('Connected to Chat Socket') });
     socket.on('disconnect', function () { console.log('Disconnected from Chat Socket') });
   },
@@ -98,7 +106,15 @@ const ChatUI = React.createClass({
       chatroomID: this.state.chatroomID
     });
   },
-
+  updateOnlineWidget: function (connections) {
+    var users = [];
+    for (var i = 0; i < connections.length; i++) {
+      if (connections[i].id === this.state.chatroomID) {
+        users.push(connections[i]['user']);
+      }
+    }
+    this.setState({ users: users });
+  },
   render: function () {
     if (this.state.messages) {
       var allMessages = this.state.messages.map(function (msg, ind) {
@@ -111,20 +127,28 @@ const ChatUI = React.createClass({
     if (this.state.socketConnected) {
       return (
         <div>
-
           <div className="row">
             <div className="col-md-offset-2"></div>
             <div className="col-md-8">
               <form className="form-inline">
                 <input id="inputField" type="text" placeholder="type a message" onChange={this.handleMsgInput} className="form-control" autoComplete='off' />
-                <button onClick={this.sendMsg} className="btn btn-success">Send</button>
+                <button onClick={this.sendMsg} className="btn btn-primary">Send</button>
               </form>
             </div>
             <div className="col-md-offset-2"></div>
           </div>
 
+          <br />
+
           <div className="row">
-            {allMessages}
+            <div className="col-md-offset-1" />
+            <div className="col-md-8">
+              {allMessages}
+            </div>
+            <div className="col-md-2">
+              <WhosOnlineWidget users={this.state.users} />
+            </div>
+            <div className="col-md-offset-1" />
           </div>
 
         </div>
@@ -136,7 +160,7 @@ const ChatUI = React.createClass({
           <div className="col-md-8">
             <form className="form-inline">
               <input id="inputField" type="text" placeholder="pick a username" onChange={this.handleNameInput} className="form-control" autoComplete='off' />
-              <button onClick={this.connectToSocket} className="btn btn-success"> Join </button>
+              <button onClick={this.connectToSocket} className="btn btn-primary"> Join </button>
             </form>
           </div>
           <div className="col-md-offset-2"></div>

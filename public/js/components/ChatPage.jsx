@@ -5,6 +5,7 @@ const ChatPage = React.createClass({
       <div className="container">
         <ChatUI />
       </div>
+
     );
   }
 });

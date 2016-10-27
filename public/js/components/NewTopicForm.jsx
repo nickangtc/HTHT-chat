@@ -4,6 +4,11 @@ const NewTopicForm = React.createClass({
       topic: ''
     }
   },
+  componentWillMount: function () {
+    $(document).on("keypress", function() {
+      $("#input").focus();
+    });
+  },
   handleTopicInput: function (e) {
     this.setState({ topic: e.target.value });
   },
@@ -32,7 +37,7 @@ const NewTopicForm = React.createClass({
           <form className="form-inline">
             <div className="form-group">
               <label className="sr-only" htmlFor="topic">topic</label>
-              <input size="48" id="topic" type="text" onChange={this.handleTopicInput} placeholder="how will AI co-exist with humanity 20 years from now?" className="form-control" autoComplete='off' />
+              <input id="input" size="48" type="text" onChange={this.handleTopicInput} placeholder="how will AI co-exist with humanity 20 years from now?" className="form-control" autoComplete='off' />
             </div>
             <button onClick={this.handleCreate} className="btn btn-primary">make room</button>
           </form>

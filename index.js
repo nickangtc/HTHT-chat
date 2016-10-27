@@ -78,16 +78,6 @@ server.listen(port, () => {
   console.log('Server listening on port: ', server.address().port)
 });
 
-
-// custom namespaces for each unique chatroom
-// var channel1 = io.of('/channelid');
-// channel1.on('connection', function(socket){
-//   console.log('someone connected'):
-// });
-// channel1.emit('hi', 'everyone!');
-
-
-
 // listen for a socket io connection event
 io.on('connection', (socket) => {
   // new connection, save the socket
@@ -106,10 +96,10 @@ io.on('connection', (socket) => {
     // emit welcome message to new user
     socket.emit('connected');
     // broadcast their arrival to everyone else
-    io.to(data.chatroomID).emit('newcomer', data.username);
-    socket.broadcast.to(data.chatroomID).emit('online', CONNECTIONS);
+    io.to(connection.chatroomID).emit('newcomer', data.username);
+    socket.broadcast.to(connection.chatroomID).emit('online', CONNECTIONS);
 
-    io.to(data.chatroomID).emit('some event');
+    io.to(connection.chatroomID).emit('some event');
 
     console.log(`## ${connection.user} joined the chat on (${connection.id}).`)
   });
