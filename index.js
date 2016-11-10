@@ -1,12 +1,16 @@
 'use strict'
 
 var express = require('express');
+var db = require('./models');
 var http = require('http');
 var app = express();
 var bodyParser = require('body-parser');
 var port = process.env.PORT || 3000;
 var server = http.createServer(app);
 var io = require('socket.io')(server);
+
+// Logs all existing socket connections where 1 user is has 1 connection
+// [ {id, user, chatroomID}, {}, ... ]
 var CONNECTIONS = [];
 
 // currently existing topics and their corresponding chatrooms
@@ -52,19 +56,39 @@ app.get('/discuss/:id', function (req, res) {
 
 app.get('/topics', function (req, res) {
   console.log("Dispatching topics from server GET TOPICS");
-  res.send(TOPICS);
+  db.chatroom_topic.findAll().then(function (topics) {
+    res.send(topics);
+  });
 });
 
+// Create new chatroom topic
 app.post('/topics', function (req, res) {
   console.log("Received topic from front-end");
   var newTopic = req.body;
-  newTopic.id = TOPICS.length + 1;
-  newTopic.headCount = 1;
-  TOPICS.push(newTopic);
+  var redirectPath = 'discuss/' + topic.id + '?topic=' + encodeURIComponent(req.body.title);
 
-  console.log('Redirecting to', '/discuss/' + newTopic.id + '?topic=' + req.body.title);
-  var redirectPath = 'discuss/' + newTopic.id + '?topic=' + encodeURIComponent(req.body.title);
-  res.send(redirectPath);
+  db.chatroom_topic.findOrCreate({
+    where: {
+      title: newTopic.title
+    },
+    defaults: { active_users: 1 }
+  }).then(function (topic, created) {
+    // Add 1 to active users count as user joins the existing chatroom
+    if (!created) {
+      var newActiveUsersCount = topic.active_users++;
+      db.chatroom_topic.update({
+        active_users: newActiveUsersCount
+      }, {
+        where: { id: topic.id }
+      }).then(function () {
+        console.log('Redirecting to', '/discuss/' + newTopic.id + '?topic=' + req.body.title);
+        res.send(redirectPath);
+      });
+    } else {
+      console.log('Redirecting to', '/discuss/' + newTopic.id + '?topic=' + req.body.title);
+      res.send(redirectPath);
+    }
+  });
 });
 
 
