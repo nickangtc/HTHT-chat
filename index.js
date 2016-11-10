@@ -11,7 +11,8 @@ var io = require('socket.io')(server);
 
 // Logs all existing socket connections where 1 user is has 1 connection
 // [ {id, user, chatroomID}, {}, ... ]
-var CONNECTIONS = [];
+// var CONNECTIONS = [];
+var CONNECTIONS = allConnections() || [];
 
 // currently existing topics and their corresponding chatrooms
 var TOPICS = [
@@ -65,7 +66,6 @@ app.get('/topics', function (req, res) {
 app.post('/topics', function (req, res) {
   console.log("Received topic from front-end");
   var newTopic = req.body;
-  var redirectPath = 'discuss/' + topic.id + '?topic=' + encodeURIComponent(req.body.title);
 
   db.chatroom_topic.findOrCreate({
     where: {
@@ -73,21 +73,10 @@ app.post('/topics', function (req, res) {
     },
     defaults: { active_users: 1 }
   }).then(function (topic, created) {
-    // Add 1 to active users count as user joins the existing chatroom
-    if (!created) {
-      var newActiveUsersCount = topic.active_users++;
-      db.chatroom_topic.update({
-        active_users: newActiveUsersCount
-      }, {
-        where: { id: topic.id }
-      }).then(function () {
-        console.log('Redirecting to', '/discuss/' + newTopic.id + '?topic=' + req.body.title);
-        res.send(redirectPath);
-      });
-    } else {
-      console.log('Redirecting to', '/discuss/' + newTopic.id + '?topic=' + req.body.title);
-      res.send(redirectPath);
-    }
+    // At the moment, no differentiation between creating and joining existing room
+    var redirectPath = 'discuss/' + topic.id + '?topic=' + encodeURIComponent(req.body.title);
+    console.log('Redirecting to', '/discuss/' + newTopic.id + '?topic=' + req.body.title);
+    res.send(redirectPath);
   });
 });
 
@@ -95,8 +84,28 @@ app.post('/topics', function (req, res) {
 // SOCKET.IO
 function findConnection (id) {
   console.log('connections:', CONNECTIONS);
-  return CONNECTIONS.filter(function (c) { return c.id === id })[0]
+
+  db.connections.findById(id).then(function (connection) {
+    return connection;
+    // return CONNECTIONS.filter(function (c) { return c.id === id })[0]
+  });
 }
+
+function allConnections () {
+  db.connections.findAll().then(function (connections) {
+    return connections;
+  });
+}
+
+function deleteConnection (id) {
+  db.connections.destroy({
+    where: { socketID: id }
+  }).then(function () {
+    console.log(`Connection ${id} deleted from db`);
+    return true;
+  })
+}
+
 // start server listening
 server.listen(port, () => {
   console.log('Server listening on port: ', server.address().port)
@@ -105,7 +114,11 @@ server.listen(port, () => {
 // listen for a socket io connection event
 io.on('connection', (socket) => {
   // new connection, save the socket
-  CONNECTIONS.push({id: socket.id})
+  // CONNECTIONS.push({id: socket.id})
+  db.connections.create({
+    socketID: socket.id
+  });
+
   console.log(`## New connection (${socket.id}). Total: ${CONNECTIONS.length}.`)
 
   // find or create chatroom
@@ -114,12 +127,16 @@ io.on('connection', (socket) => {
     socket.join(data.chatroomID);
 
     // attach the new user and her chatroomID to the connection object
-    let connection = findConnection(socket.id)
-    connection.user = data.username;
-    connection.chatroomID = data.chatroomID;
+    db.connections.update({
+      user: data.username,
+      chatroomID: data.chatroomID
+    }, {
+      where: { socketID: socket.id }
+    });
     // emit welcome message to new user
     socket.emit('connected');
     // broadcast their arrival to everyone else
+    let connection = findConnection(socket.id)
     io.to(connection.chatroomID).emit('newcomer', data.username);
     socket.broadcast.to(connection.chatroomID).emit('online', CONNECTIONS);
 
@@ -133,16 +150,19 @@ io.on('connection', (socket) => {
     // find the connection and remove  from the collection
     let connection = findConnection(socket.id)
     if (connection) {
-      CONNECTIONS.splice(CONNECTIONS.indexOf(connection), 1)
-      if (connection.user) {
-        socket.broadcast.to(connection.chatroomID).emit('left', connection.user)
-        socket.broadcast.to(connection.chatroomID).emit('online', CONNECTIONS)
-        console.log(`## ${connection.user}(${connection.id}) disconnected. Remaining: ${CONNECTIONS.length}.`)
-      } else {
-        console.log(`## Connection (${connection.id}) (${socket.id}) disconnected. Remaining: ${CONNECTIONS.length}.`)
+      // Ensure connection is deleted from DB before proceeding
+      if ( deleteConnection(socket.id) ) {
+        if (connection.user) {
+          socket.broadcast.to(connection.chatroomID).emit('left', connection.user)
+          socket.broadcast.to(connection.chatroomID).emit('online', CONNECTIONS)
+          console.log(`## ${connection.user}(${connection.id}) disconnected. Remaining: ${CONNECTIONS.length}.`)
+        } else {
+          console.log(`## Connection (${connection.id}) (${socket.id}) disconnected. Remaining: ${CONNECTIONS.length}.`)
+        }
       }
     }
-    socket.disconnect()
+    // CONNECTIONS.splice(CONNECTIONS.indexOf(connection), 1)
+    socket.disconnect();
   });
 
   // broadcast chat message to other users
