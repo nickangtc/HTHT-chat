@@ -125,16 +125,18 @@ io.on('connection', (socket) => {
       user: data.username,
       chatroomID: data.chatroomID
     }, {
-      where: { socketID: socket.id }
-    });
-    // emit welcome message to new user
-    socket.emit('connected');
-    // broadcast their arrival to everyone else
-    // let connection = findConnection(socket.id)
-    db.connections.findOne({
-      where: { socketID: socket.id }
+      where: { socketID: socket.id },
+      returning: true,
+      plain: true
     })
-    .then(function (connection) {
+    .then(function (result) {
+      console.log("connection object returned after update:", result[1].dataValues);
+      var connection = result[1].dataValues;
+      // emit welcome message to new user
+      socket.emit('connected');
+      // broadcast their arrival to everyone else
+      // let connection = findConnection(socket.id)
+
       io.to(connection.chatroomID).emit('newcomer', data.username);
       socket.broadcast.to(connection.chatroomID).emit('online', CONNECTIONS);
 
@@ -152,15 +154,14 @@ io.on('connection', (socket) => {
       where: { socketID: socket.id }
     }).then(function (connection) {
       // Ensure connection is deleted from DB before proceeding
-      if ( deleteConnection(socket.id) ) {
-        if (connection.user) {
-          socket.broadcast.to(connection.chatroomID).emit('left', connection.user)
-          socket.broadcast.to(connection.chatroomID).emit('online', CONNECTIONS)
-          console.log(`## ${connection.user}(${connection.id}) disconnected. Remaining: ${CONNECTIONS.length}.`)
-        } else {
-          console.log(`## Connection (${connection.id}) (${socket.id}) disconnected. Remaining: ${CONNECTIONS.length}.`)
-        }
-      }
+      db.connections.destroy({
+        where: { socketID: socket.id }
+      }).then(function () {
+        console.log(`Connection ${socket.id} deleted from db`);
+        socket.broadcast.to(connection.chatroomID).emit('left', connection.user)
+        socket.broadcast.to(connection.chatroomID).emit('online', CONNECTIONS)
+        console.log(`## ${connection.user}(${connection.id}) disconnected. Remaining: ${CONNECTIONS.length}.`)
+      })
     });
     // CONNECTIONS.splice(CONNECTIONS.indexOf(connection), 1)
     socket.disconnect();
