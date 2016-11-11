@@ -64,7 +64,8 @@ app.get('/topics', function (req, res) {
 
 // Create new chatroom topic
 app.post('/topics', function (req, res) {
-  console.log("Received topic from front-end");
+  console.log("Received topic from front-end...");
+  console.log("req.body", req.body);
   var newTopic = req.body;
 
   db.chatroom_topic.findOrCreate({
@@ -74,22 +75,14 @@ app.post('/topics', function (req, res) {
     defaults: { active_users: 1 }
   }).then(function (topic, created) {
     // At the moment, no differentiation between creating and joining existing room
-    var redirectPath = 'discuss/' + topic.id + '?topic=' + encodeURIComponent(req.body.title);
-    console.log('Redirecting to', '/discuss/' + newTopic.id + '?topic=' + req.body.title);
+    var redirectPath = 'discuss/' + topic[0].dataValues.id + '?topic=' + encodeURIComponent(req.body.title);
+    console.log('Redirecting to', '/discuss/' + topic[0].dataValues.id + '?topic=' + req.body.title);
     res.send(redirectPath);
   });
 });
 
 
 // SOCKET.IO
-function findConnection (id) {
-  console.log('connections:', CONNECTIONS);
-
-  db.connections.findById(id).then(function (connection) {
-    return connection;
-    // return CONNECTIONS.filter(function (c) { return c.id === id })[0]
-  });
-}
 
 function allConnections () {
   db.connections.findAll().then(function (connections) {
@@ -115,6 +108,7 @@ server.listen(port, () => {
 io.on('connection', (socket) => {
   // new connection, save the socket
   // CONNECTIONS.push({id: socket.id})
+  console.log("Creating new connection.");
   db.connections.create({
     socketID: socket.id
   });
@@ -136,20 +130,27 @@ io.on('connection', (socket) => {
     // emit welcome message to new user
     socket.emit('connected');
     // broadcast their arrival to everyone else
-    let connection = findConnection(socket.id)
-    io.to(connection.chatroomID).emit('newcomer', data.username);
-    socket.broadcast.to(connection.chatroomID).emit('online', CONNECTIONS);
+    // let connection = findConnection(socket.id)
+    db.connections.findOne({
+      where: { socketID: socket.id }
+    })
+    .then(function (connection) {
+      io.to(connection.chatroomID).emit('newcomer', data.username);
+      socket.broadcast.to(connection.chatroomID).emit('online', CONNECTIONS);
 
-    io.to(connection.chatroomID).emit('some event');
+      io.to(connection.chatroomID).emit('some event');
 
-    console.log(`## ${connection.user} joined the chat on (${connection.id}).`)
+      console.log(`## ${connection.user} joined the chat on (${connection.id}).`)
+    });
+
   });
 
   // listen for a disconnect event
   socket.once('disconnect', () => {
     // find the connection and remove  from the collection
-    let connection = findConnection(socket.id)
-    if (connection) {
+    db.connections.findOne({
+      where: { socketID: socket.id }
+    }).then(function (connection) {
       // Ensure connection is deleted from DB before proceeding
       if ( deleteConnection(socket.id) ) {
         if (connection.user) {
@@ -160,17 +161,19 @@ io.on('connection', (socket) => {
           console.log(`## Connection (${connection.id}) (${socket.id}) disconnected. Remaining: ${CONNECTIONS.length}.`)
         }
       }
-    }
+    });
     // CONNECTIONS.splice(CONNECTIONS.indexOf(connection), 1)
     socket.disconnect();
   });
 
   // broadcast chat message to other users
   socket.on('chat', (msg) => {
-    let connection = findConnection(socket.id)
-    // broadcast to other users
-    socket.broadcast.to(connection.chatroomID).emit('chat', {message: msg, user: connection.user})
-
-    console.log(`## ${connection.user} said: ${msg}`);
+    db.connections.findOne({
+      where: { socketID: socket.id }
+    }).then(function (connection) {
+      // broadcast to other users
+      socket.broadcast.to(connection.chatroomID).emit('chat', {message: msg, user: connection.user})
+      console.log(`## ${connection.user} said: ${msg}`);
+    });
   })
 })
