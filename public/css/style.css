@@ -3,9 +3,16 @@
 }
 
 /* Bootstrap modifications */
-.container {
+.container.really.centralised {
   height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+.container.centralised {
+  height: 100vh;
+}
+input.restrict-width {
+  width: 40%;
+  margin: 0 auto;
 }

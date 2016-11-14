@@ -1,12 +1,20 @@
 const NewTopicForm = React.createClass({
   getInitialState: function () {
     return {
-      topic: ''
+      topic: '',
+      topics: []
     }
   },
   componentWillMount: function () {
     $(document).on("keypress", function() {
-      $("#input").focus();
+      $("#topic-input").focus();
+    });
+    $.ajax({
+      method: 'GET',
+      url: '/topics',
+      success: function (data) {
+        this.setState({ topics: data })
+      }.bind(this)
     });
   },
   handleTopicInput: function (e) {
@@ -30,9 +38,9 @@ const NewTopicForm = React.createClass({
     return (
       <form>
         <div className="form-group">
-          <input id="input" size="20" type="text" onChange={this.handleTopicInput} placeholder="how will AI co-exist with humanity 20 years from now?" className="form-control" autoComplete='off' />
+          <input id="topic-input" type="text" data-toggle="dropdown" onChange={this.handleTopicInput} placeholder="how will AI co-exist with humanity 20 years from now?" className="form-control restrict-width"/>
         </div>
-        <button onClick={this.handleCreate} className="btn btn-primary">make room</button>
+        <button onClick={this.handleCreate} className="btn btn-success">make room</button>
       </form>
     );
   }

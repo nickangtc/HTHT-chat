@@ -1,10 +1,10 @@
 const NewTopicContainer = React.createClass({
   render: function () {
     return (
-      <div className="container">
+      <div className="container really centralised">
         <div className="row">
           <div className="col-md-12 text-center">
-            <h2>What conversation would you like to have today?</h2>
+            <h3>What conversation would you like to have today?</h3>
 
             <NewTopicForm />
 

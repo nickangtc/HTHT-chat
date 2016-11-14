@@ -22,7 +22,7 @@ const TopicsContainer = React.createClass({
     }.bind(this));
 
     return (
-      <div id="topics-list" className="container">
+      <div id="topics-list" className="container centralised">
         <div className="row">
           <div className="col-md-offset-2"></div>
           <div className="col-md-8">

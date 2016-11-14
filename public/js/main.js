@@ -3,4 +3,9 @@ $(document).ready(function () {
   $('body').smoothScroll({
     delegateSelector: 'a'
   });
+
+  $('.dropdown-toggle').dropdown()
+
+
+
 })
