@@ -11,7 +11,7 @@
 }
 
 #messages {
-  height: 80vh;
+  height: 78vh;
   overflow: auto;
 }
 /* Bootstrap modifications */
@@ -27,4 +27,7 @@
 .col-centered {
   float: none;
   margin: 0 auto;
+}
+.navbar-fixed-bottom {
+  min-height: 65px;
 }

@@ -3,7 +3,6 @@ const ChatPage = React.createClass({
 
     return (
       <ChatUI />
-
     );
   }
 });

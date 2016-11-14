@@ -116,10 +116,14 @@ const ChatUI = React.createClass({
     this.setState({ users: users });
   },
   autoScroll: function () {
-    var messagesDiv = document.getElementById('messages');
+    var messagesDiv = $('#messages');
     if (messagesDiv) {
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      messagesDiv.stop().animate({
+        scrollTop: messagesDiv[0].scrollHeight
+      }, 1500);
     }
+
+
   },
   render: function () {
     if (this.state.socketConnected && this.state.messages) {
@@ -148,9 +152,9 @@ const ChatUI = React.createClass({
             <div className="container">
               <div className="row">
                 <div className="col-md-8 col-centered text-center">
-                  <form className="form-inline">
-                    <input id="inputField" type="text" placeholder="type a message" onChange={this.handleMsgInput} className="form-control" autoComplete='off' />
-                    <button onClick={this.sendMsg} className="btn btn-primary">Send</button>
+                  <form>
+                    <input id="inputField" type="text" placeholder="type a message" onSubmit={this.sendMsg} onChange={this.handleMsgInput} className="form-control input-lg input-full-width" autoComplete='off' />
+                    <button onClick={this.sendMsg} className="btn btn-success btn-lg hidden">Send</button>
                   </form>
                 </div>
               </div>
