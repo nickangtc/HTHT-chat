@@ -28,22 +28,12 @@ const NewTopicForm = React.createClass({
   },
   render: function () {
     return (
-      <div className="row">
-        <div className="col-md-12">
-          <p>start your own. topic format: I want to talk about [topic name]</p>
+      <form>
+        <div className="form-group">
+          <input id="input" size="20" type="text" onChange={this.handleTopicInput} placeholder="how will AI co-exist with humanity 20 years from now?" className="form-control" autoComplete='off' />
         </div>
-
-        <div className="col-md-12">
-          <form className="form-inline">
-            <div className="form-group">
-              <label className="sr-only" htmlFor="topic">topic</label>
-              <input id="input" size="48" type="text" onChange={this.handleTopicInput} placeholder="how will AI co-exist with humanity 20 years from now?" className="form-control" autoComplete='off' />
-            </div>
-            <button onClick={this.handleCreate} className="btn btn-primary">make room</button>
-          </form>
-        </div>
-
-      </div>
+        <button onClick={this.handleCreate} className="btn btn-primary">make room</button>
+      </form>
     );
   }
 });

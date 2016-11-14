@@ -22,12 +22,18 @@ const TopicsContainer = React.createClass({
     }.bind(this));
 
     return (
-      <div>
-        <div className="col-md-offset-2"></div>
-        <div className="col-md-8">
-          {result}
+      <div id="topics-list" className="container">
+        <div className="row">
+          <div className="col-md-offset-2"></div>
+          <div className="col-md-8">
+
+            <h2>Current conversations</h2>
+
+            {result}
+
+          </div>
+          <div className="col-md-offset-2"></div>
         </div>
-        <div className="col-md-offset-2"></div>
       </div>
     );
   }
