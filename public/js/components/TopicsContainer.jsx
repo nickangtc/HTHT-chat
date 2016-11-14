@@ -24,15 +24,22 @@ const TopicsContainer = React.createClass({
     return (
       <div id="topics-list" className="container centralised">
         <div className="row">
-          <div className="col-md-offset-2"></div>
-          <div className="col-md-8">
+          <div className="col-md-8 col-centered">
+            <h2>
+              Ongoing conversations
+            </h2>
+            <h4>
+              only rooms with less than 5 people are shown because nobody likes talking in a market
+            </h4>
 
-            <h2>Current conversations</h2>
+            <div className="panel panel-default margin-top">
+              <ul className="list-group">
+                {result}
+              </ul>
+            </div>
 
-            {result}
 
           </div>
-          <div className="col-md-offset-2"></div>
         </div>
       </div>
     );

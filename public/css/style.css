@@ -2,6 +2,10 @@
   border: 1px solid grey;
 }
 
+.margin-top {
+  margin-top: 1em;
+}
+
 /* Bootstrap modifications */
 .container.really.centralised {
   height: 100vh;
@@ -12,7 +16,14 @@
 .container.centralised {
   height: 100vh;
 }
-input.restrict-width {
+/*input.restrict-width {
   width: 40%;
+  margin: 0 auto;
+}
+.btn {
+  min-width: 20vw;
+}*/
+.col-centered {
+  float: none;
   margin: 0 auto;
 }
