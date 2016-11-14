@@ -59,7 +59,7 @@ const NewTopicForm = React.createClass({
           {this.findSimilarTopics(this.state.topic)}
         </datalist>
         <div className="form-group">
-          <input id="topic-input" list="similar-topics" type="text" onChange={this.handleTopicInput} placeholder="how will AI co-exist with humanity 20 years from now?" className="form-control restrict-width"/>
+          <input id="topic-input" list="similar-topics" type="text" onChange={this.handleTopicInput} placeholder="how will AI co-exist with humanity 20 years from now?" className="form-control"/>
         </div>
         <button onClick={this.handleCreate} className="btn btn-success btn-lg btn-block">proceed to room</button>
       </form>

@@ -35,7 +35,7 @@ const ChatUI = React.createClass({
   },
   messageRecieve: function (msg) {
     var messages = this.state.messages;
-    messages.unshift({
+    messages.push({
       name: msg.user,
       msg: msg.message
     });
@@ -45,7 +45,7 @@ const ChatUI = React.createClass({
     var users = this.state.users;
     var messages = this.state.messages;
     users.unshift(user);
-    messages.unshift({
+    messages.push({
       name: '',
       msg: user + ' joined'
     });
@@ -55,7 +55,7 @@ const ChatUI = React.createClass({
     var users = this.state.users;
     var messages = this.state.messages;
     users.splice(users.indexOf(user), 1);
-    messages.unshift({
+    messages.push({
       name: '',
       msg: user + ' left'
     });
@@ -75,7 +75,7 @@ const ChatUI = React.createClass({
     socket.emit('chat', msg);
 
     var messages = this.state.messages;
-    messages.unshift({
+    messages.push({
       name: 'you',
       msg: this.state.message
     });
@@ -115,55 +115,63 @@ const ChatUI = React.createClass({
     }
     this.setState({ users: users });
   },
+  autoScroll: function () {
+    var messagesDiv = document.getElementById('messages');
+    if (messagesDiv) {
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+  },
   render: function () {
-    if (this.state.messages) {
+    if (this.state.socketConnected && this.state.messages) {
       var allMessages = this.state.messages.map(function (msg, ind) {
         return (
           <ChatMessage key={ind} msg={msg} />
         )
       });
+      setTimeout(this.autoScroll, 30);
     }
-
     if (this.state.socketConnected) {
       return (
-        <div>
-          <div className="row">
-            <div className="col-md-offset-2"></div>
-            <div className="col-md-8">
-              <form className="form-inline">
-                <input id="inputField" type="text" placeholder="type a message" onChange={this.handleMsgInput} className="form-control" autoComplete='off' />
-                <button onClick={this.sendMsg} className="btn btn-primary">Send</button>
-              </form>
+        <div className="padding-bottom">
+          <div className="container">
+            <div className="row">
+              <div id="messages" className="col-md-8 col-centered">
+                {allMessages}
+              </div>
+              <div className="col-md-2">
+                <WhosOnlineWidget users={this.state.users} />
+              </div>
             </div>
-            <div className="col-md-offset-2"></div>
           </div>
 
-          <br />
+          <div className="navbar navbar-fixed-bottom">
+            <div className="container">
+              <div className="row">
+                <div className="col-md-8 col-centered text-center">
+                  <form className="form-inline">
+                    <input id="inputField" type="text" placeholder="type a message" onChange={this.handleMsgInput} className="form-control" autoComplete='off' />
+                    <button onClick={this.sendMsg} className="btn btn-primary">Send</button>
+                  </form>
+                </div>
+              </div>
 
-          <div className="row">
-            <div className="col-md-offset-1" />
-            <div className="col-md-8">
-              {allMessages}
             </div>
-            <div className="col-md-2">
-              <WhosOnlineWidget users={this.state.users} />
-            </div>
-            <div className="col-md-offset-1" />
           </div>
 
         </div>
+
       );
     } else if (!this.state.socketConnected){
       return (
-        <div className="row">
-          <div className="col-md-offset-2"></div>
-          <div className="col-md-8">
-            <form className="form-inline">
-              <input id="inputField" type="text" placeholder="pick a username" onChange={this.handleNameInput} className="form-control" autoComplete='off' />
-              <button onClick={this.connectToSocket} className="btn btn-primary"> Join </button>
-            </form>
+        <div className="container">
+          <div className="row">
+            <div className="col-md-8 col-centered text-center">
+              <form className="form-inline">
+                <input id="inputField" type="text" placeholder="pick a username" onChange={this.handleNameInput} className="form-control" autoComplete='off' />
+                <button onClick={this.connectToSocket} className="btn btn-primary"> Join </button>
+              </form>
+            </div>
           </div>
-          <div className="col-md-offset-2"></div>
         </div>
       )
     }
