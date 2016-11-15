@@ -16,7 +16,9 @@ HTHT chat has the following features:
 
 HTHT chat is built with Facebook's React.js for blazing fast DOM re-rendering and [socket.io](www.socket.io) web sockets.
 
-(logos of React and Socket.io)
+![node.js](https://nodejs.org/static/images/logos/nodejs-new-pantone-black.png)
+![socket.io](http://www.gamedev.net/uploads/c306ef24cacc68adbb5695d3fcf67e9d.png)
+![facebook reactJS](https://blog.zingchart.com/content/images/2016/06/react-1.png)
 
 ## Development process
 
