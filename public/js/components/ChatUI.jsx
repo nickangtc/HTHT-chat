@@ -153,7 +153,7 @@ const ChatUI = React.createClass({
               <div className="row">
                 <div className="col-md-8 col-centered text-center">
                   <form>
-                    <input id="inputField" type="text" placeholder="type a message" onSubmit={this.sendMsg} onChange={this.handleMsgInput} className="form-control input-lg input-full-width" autoComplete='off' />
+                    <input id="inputField" type="text" placeholder="type a message" onSubmit={this.sendMsg} onChange={this.handleMsgInput} className="form-control input-lg" autoComplete='off' />
                     <button onClick={this.sendMsg} className="btn btn-success btn-lg hidden">Send</button>
                   </form>
                 </div>
