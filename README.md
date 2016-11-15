@@ -2,6 +2,8 @@
 
 HTHT chat is a live chat app that allows people to chat according to their topics of interest _at the moment_. If our moods fluctuate as much as we try to deny them, why shouldn't "chat with a stranger" chatrooms reflect our day-to-day variations in thoughts? HTHT stands for heart to heart talk.
 
+Live demo [here](https://htht-chat.herokuapp.com/)
+
 ![HTHT app chat interface](http://i.giphy.com/l0HlDtaMQbalFoOkM.gif)
 
 ## Features
