@@ -6,7 +6,7 @@ At any point in time there can be tens or hundreds of chat rooms, but you can on
 
 Live demo [here](https://htht-chat.herokuapp.com/)
 
-![HTHT app chat interface](http://i.imgur.com/PdNUXpI.gif)
+![HTHT app chat interface](http://i.imgur.com/cwynRVd.gif)
 
 ## Features
 
