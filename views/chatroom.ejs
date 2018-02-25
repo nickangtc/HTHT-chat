@@ -9,30 +9,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" media="screen" title="no title">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/style.css">
-
-    <!-- jQuery -->
-    <script src="//code.jquery.com/jquery-1.11.1.js"></script>
-    <!-- Bootstrap JS -->
-    <script src="/js/bootstrap.js"></script>
-    <!-- React -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react-dom.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0-alpha1/JSXTransformer.js"></script>
-
-    <!-- Socket.io -->
-    <script src="//cdn.socket.io/socket.io-1.4.5.js"></script>
-    <!-- Custom JS -->
-    <script src="/js/main.js"></script>
-
-
   </head>
   <body>
-
-    <script src="/js/components/ChatPage.jsx" type="text/jsx"></script>
-    <script src="/js/components/ChatUI.jsx" type="text/jsx"></script>
-    <script src="/js/components/ChatMessage.jsx" type="text/jsx"></script>
-    <script src="/js/components/WhosOnlineWidget.jsx" type="text/jsx"></script>
-
     <div class="container">
       <div class="row">
         <div class="col-md-8 col-centered text-center">
@@ -43,12 +21,13 @@
 
     <div id="root"></div>
 
-    <!-- REACT JS -->
-
-    <script type="text/jsx">
-      ReactDOM.render(<ChatPage />, document.getElementById('root'));
-    </script>
-
-
+    <!-- jQuery -->
+    <script src="//code.jquery.com/jquery-1.11.1.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="/js/bootstrap.js"></script>
+    <!-- Socket.io -->
+    <script src="//cdn.socket.io/socket.io-1.4.5.js"></script>
+    <!-- Bundle -->
+    <script src="/build/app.bundle.js"></script>
   </body>
 </html>
