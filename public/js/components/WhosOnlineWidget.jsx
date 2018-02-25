@@ -1,13 +1,20 @@
-const WhosOnlineWidget = React.createClass({
-  getInitialState: function () {
-    return {
+import React, { Component } from 'react';
+
+export default class WhosOnlineWidget extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
       users: []
     }
-  },
-  render: function () {
-    var users = this.props.users;
+  }
+
+  render() {
+    const users = this.props.users;
+    let list = [];
+
     if (users) {
-      var list = this.state.users.map(function (user, ind) {
+      list = this.state.users.map(function (user, ind) {
         return (
           <div key={ind}>
             <p>{user}</p>
@@ -25,4 +32,4 @@ const WhosOnlineWidget = React.createClass({
       </div>
     );
   }
-});
+}

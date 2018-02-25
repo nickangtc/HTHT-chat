@@ -1,5 +1,8 @@
-const PageNotFound = React.createClass({
-  render: function () {
+import React, { Component } from 'react';
+
+
+export default class PageNotFound extends Component {
+  render() {
     return (
       <div className="row">
         <h1>Oops, that's embarrassing</h1>
@@ -7,4 +10,4 @@ const PageNotFound = React.createClass({
       </div>
     );
   }
-});
+}

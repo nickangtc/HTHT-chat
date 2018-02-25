@@ -1,5 +1,12 @@
 # HTHT chat
 
+__UPDATE 13/02/18__ Refactoring this old project from 2016. Work to be done:
+
+- Convert ES5 -> ES6 with Webpack + Babel
+- Write unit tests with Jest and Enzyme
+- Ongoing conversations should be cleared when the last person leaves the room
+- Users should be able to see list of everyone else that is in the room
+
 HTHT chat is a live chat app that allows people to chat according to their topics of interest _at the moment_. If our moods fluctuate as much as we try to deny it, why shouldn't our public chatrooms cater to that? HTHT stands for heart to heart talk, and I built it as my 2nd project at General Assembly as a web development student.
 
 At any point in time there can be tens or hundreds of chat rooms, but you can only belong to one. Each room has a 5 people limit to ensure a personal and meaningful experience.

@@ -1,11 +1,22 @@
-const NewTopicForm = React.createClass({
-  getInitialState: function () {
-    return {
+import React, { Component } from 'react';
+
+
+export default class IndexPage extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
       topic: '',
       topics: []
     }
-  },
-  componentWillMount: function () {
+
+    // Bindings
+    this.handleTopicInput = this.handleTopicInput.bind(this);
+    this.handleCreate = this.handleCreate.bind(this);
+    this.findSimilarTopics = this.findSimilarTopics.bind(this);
+  }
+
+  componentWillMount() {
     $(document).on("keypress", function() {
       $("#topic-input").focus();
     });
@@ -16,11 +27,13 @@ const NewTopicForm = React.createClass({
         this.setState({ topics: data })
       }.bind(this)
     });
-  },
-  handleTopicInput: function (e) {
+  }
+
+  handleTopicInput(e) {
     this.setState({ topic: e.target.value });
-  },
-  handleCreate: function (e) {
+  }
+
+  handleCreate(e) {
     e.preventDefault();
     $.ajax({
       method: 'POST',
@@ -33,26 +46,28 @@ const NewTopicForm = React.createClass({
         window.location.href += redirectPath;
       }
     });
-  },
-  findSimilarTopics: function (searchTerm) {
-    var result = [];
-    var term = searchTerm.toLowerCase();
+  }
+
+  findSimilarTopics(searchTerm) {
+    const result = [];
+    const term = searchTerm.toLowerCase();
     if (this.state.topics) {
-      for (var i = 0; i < this.state.topics.length; i++) {
-        var topic = this.state.topics[i].title.toLowerCase();
+      for (let i = 0; i < this.state.topics.length; i++) {
+        const topic = this.state.topics[i].title.toLowerCase();
         if ( topic.includes(term) ) {
           result.push(this.state.topics[i].title);
         }
       }
-      var similarTopics = result.map(function (topic, index) {
+      const similarTopics = result.map(function (topic, index) {
         return (
           <option value={topic} key={index} />
         );
       });
       return similarTopics;
     } else { return '' }
-  },
-  render: function () {
+  }
+
+  render() {
     return (
       <form>
         <datalist id="similar-topics">
@@ -65,4 +80,4 @@ const NewTopicForm = React.createClass({
       </form>
     );
   }
-});
+}

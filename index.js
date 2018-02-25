@@ -1,21 +1,21 @@
-'use strict'
+'use strict';
 
-var express = require('express');
-var db = require('./models');
-var http = require('http');
-var app = express();
-var bodyParser = require('body-parser');
-var port = process.env.PORT || 3000;
-var server = http.createServer(app);
-var io = require('socket.io')(server);
+const express = require('express');
+const db = require('./models');
+const http = require('http');
+const app = express();
+const bodyParser = require('body-parser');
+const port = process.env.PORT || 3000;
+const server = http.createServer(app);
+const io = require('socket.io')(server);
 
 // Logs all existing socket connections where 1 user is has 1 connection
 // [ {id, user, chatroomID}, {}, ... ]
 // var CONNECTIONS = [];
-var CONNECTIONS = allConnections() || [];
+const CONNECTIONS = allConnections() || [];
 
 // currently existing topics and their corresponding chatrooms
-var TOPICS = [
+const TOPICS = [
   {
     id: 1,
     title: 'will we see AI in our lifetime?',
@@ -66,7 +66,7 @@ app.get('/topics', function (req, res) {
 app.post('/topics', function (req, res) {
   console.log("Received topic from front-end...");
   console.log("req.body", req.body);
-  var newTopic = req.body;
+  const newTopic = req.body;
 
   db.chatroom_topic.findOrCreate({
     where: {
@@ -75,7 +75,7 @@ app.post('/topics', function (req, res) {
     defaults: { active_users: 1 }
   }).then(function (topic, created) {
     // At the moment, no differentiation between creating and joining existing room
-    var redirectPath = 'discuss/' + topic[0].dataValues.id + '?topic=' + encodeURIComponent(req.body.title);
+    const redirectPath = 'discuss/' + topic[0].dataValues.id + '?topic=' + encodeURIComponent(req.body.title);
     console.log('Redirecting to', '/discuss/' + topic[0].dataValues.id + '?topic=' + req.body.title);
     res.send(redirectPath);
   });
@@ -131,7 +131,7 @@ io.on('connection', (socket) => {
     })
     .then(function (result) {
       console.log("connection object returned after update:", result[1].dataValues);
-      var connection = result[1].dataValues;
+      const connection = result[1].dataValues;
       // emit welcome message to new user
       socket.emit('connected');
       // broadcast their arrival to everyone else
