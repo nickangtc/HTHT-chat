@@ -10,10 +10,25 @@
   padding-bottom: 70px;
 }
 
+.username-bubble {
+  color: white;
+  border-radius: 99em;
+  padding: 0.25em 0.5em;
+  margin-left: 0.25em;
+}
+.username-bubble:first-of-type {
+  margin-left: 0;
+}
+
+#whos-online-widget {
+  min-height: 2.5em;
+}
+
 #messages {
-  height: 78vh;
+  max-height: 73vh;
   overflow: auto;
 }
+
 /* Bootstrap modifications */
 .container.really.centralised {
   height: 100vh;

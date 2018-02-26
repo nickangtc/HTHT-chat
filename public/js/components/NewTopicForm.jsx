@@ -7,7 +7,8 @@ export default class IndexPage extends Component {
 
     this.state = {
       topic: '',
-      topics: []
+      topics: [],
+      error: false,
     }
 
     // Bindings
@@ -23,9 +24,9 @@ export default class IndexPage extends Component {
     $.ajax({
       method: 'GET',
       url: '/topics',
-      success: function (data) {
-        this.setState({ topics: data })
-      }.bind(this)
+      success: data => {
+        this.setState({ topics: data });
+      }
     });
   }
 
@@ -35,6 +36,13 @@ export default class IndexPage extends Component {
 
   handleCreate(e) {
     e.preventDefault();
+
+    if (this.state.topic === '') {
+      return this.setState({
+        error: 'Your room needs a topic!',
+      });
+    }
+
     $.ajax({
       method: 'POST',
       url: '/topics',
@@ -69,14 +77,19 @@ export default class IndexPage extends Component {
 
   render() {
     return (
-      <form>
+      <form onSubmit={this.handleCreate}>
         <datalist id="similar-topics">
           {this.findSimilarTopics(this.state.topic)}
         </datalist>
+        { this.state.error &&
+          <div className="form-group">
+            <p style={{ color: 'red', textAlign: 'left' }}>{ this.state.error }</p>
+          </div>
+        }
         <div className="form-group">
           <input id="topic-input" list="similar-topics" type="text" onChange={this.handleTopicInput} placeholder="how will AI co-exist with humanity 20 years from now?" className="form-control"/>
         </div>
-        <button onClick={this.handleCreate} className="btn btn-success btn-lg btn-block">proceed to room</button>
+        <button type="submit" className="btn btn-success btn-lg btn-block">proceed to room</button>
       </form>
     );
   }

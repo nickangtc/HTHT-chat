@@ -53,13 +53,11 @@ class TopicsContainer extends Component {
             <h4>
               only rooms with less than 5 people are shown because nobody likes talking in a market
             </h4>
-
             <div className="panel panel-default margin-top">
               <ul className="list-group">
                 {result}
               </ul>
             </div>
-
           </div>
         </div>
       </div>

@@ -2436,7 +2436,7 @@ var _ChatUI = __webpack_require__(79);
 
 var _ChatUI2 = _interopRequireDefault(_ChatUI);
 
-var _PageNotFound = __webpack_require__(80);
+var _PageNotFound = __webpack_require__(81);
 
 var _PageNotFound2 = _interopRequireDefault(_PageNotFound);
 
@@ -23773,7 +23773,8 @@ var IndexPage = function (_Component) {
 
     _this.state = {
       topic: '',
-      topics: []
+      topics: [],
+      error: false
 
       // Bindings
     };_this.handleTopicInput = _this.handleTopicInput.bind(_this);
@@ -23785,15 +23786,17 @@ var IndexPage = function (_Component) {
   _createClass(IndexPage, [{
     key: 'componentWillMount',
     value: function componentWillMount() {
+      var _this2 = this;
+
       $(document).on("keypress", function () {
         $("#topic-input").focus();
       });
       $.ajax({
         method: 'GET',
         url: '/topics',
-        success: function (data) {
-          this.setState({ topics: data });
-        }.bind(this)
+        success: function success(data) {
+          _this2.setState({ topics: data });
+        }
       });
     }
   }, {
@@ -23805,6 +23808,13 @@ var IndexPage = function (_Component) {
     key: 'handleCreate',
     value: function handleCreate(e) {
       e.preventDefault();
+
+      if (this.state.topic === '') {
+        return this.setState({
+          error: 'Your room needs a topic!'
+        });
+      }
+
       $.ajax({
         method: 'POST',
         url: '/topics',
@@ -23842,11 +23852,20 @@ var IndexPage = function (_Component) {
     value: function render() {
       return _react2.default.createElement(
         'form',
-        null,
+        { onSubmit: this.handleCreate },
         _react2.default.createElement(
           'datalist',
           { id: 'similar-topics' },
           this.findSimilarTopics(this.state.topic)
+        ),
+        this.state.error && _react2.default.createElement(
+          'div',
+          { className: 'form-group' },
+          _react2.default.createElement(
+            'p',
+            { style: { color: 'red', textAlign: 'left' } },
+            this.state.error
+          )
         ),
         _react2.default.createElement(
           'div',
@@ -23855,7 +23874,7 @@ var IndexPage = function (_Component) {
         ),
         _react2.default.createElement(
           'button',
-          { onClick: this.handleCreate, className: 'btn btn-success btn-lg btn-block' },
+          { type: 'submit', className: 'btn btn-success btn-lg btn-block' },
           'proceed to room'
         )
       );
@@ -23884,7 +23903,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _WhosOnlineWidget = __webpack_require__(81);
+var _WhosOnlineWidget = __webpack_require__(80);
 
 var _WhosOnlineWidget2 = _interopRequireDefault(_WhosOnlineWidget);
 
@@ -24000,18 +24019,13 @@ var IndexPage = function (_Component) {
     key: 'userJoined',
     value: function userJoined(user) {
       this.setState({
-        users: [user].concat(_toConsumableArray(this.state.users)),
         messages: [].concat(_toConsumableArray(this.state.messages), [{ name: '', msg: user + ' joined' }])
       });
     }
   }, {
     key: 'userLeft',
     value: function userLeft(user) {
-      var users = [].concat(_toConsumableArray(this.state.users));
-      users.splice(users.indexOf(user), 1);
-
       this.setState({
-        users: users,
         messages: [].concat(_toConsumableArray(this.state.messages), [{ name: '', msg: user + ' left' }])
       });
     }
@@ -24032,7 +24046,7 @@ var IndexPage = function (_Component) {
       socket.emit('chat', message);
 
       this.setState({
-        messages: [].concat(_toConsumableArray(this.state.messages), [{ name: 'you', msg: message }]),
+        messages: [].concat(_toConsumableArray(this.state.messages), [{ name: 'me', msg: message }]),
         message: ''
       });
 
@@ -24048,15 +24062,19 @@ var IndexPage = function (_Component) {
     value: function connectToSocket(e) {
       e.preventDefault();
 
-      // connect to chat socket with chatroomID
       var socket = io(window.location.host);
+
+      // init socket on client to listen for and emit events
       this.setState({
         socketConnected: true,
-        socket: socket
+        socket: socket,
+        currentUser: this.state.username
       });
       this.initSocketListeners(socket);
 
       console.log('Joining chatroom', this.state.chatroomID, 'with name: ', this.state.username);
+
+      // emit "join or create room" event
       socket.emit('join or create room', {
         username: this.state.username,
         chatroomID: this.state.chatroomID
@@ -24064,13 +24082,10 @@ var IndexPage = function (_Component) {
     }
   }, {
     key: 'updateOnlineWidget',
-    value: function updateOnlineWidget(connections) {
-      var users = [];
-      for (var i = 0; i < connections.length; i++) {
-        if (connections[i].id === this.state.chatroomID) {
-          users.push(connections[i]['user']);
-        }
-      }
+    value: function updateOnlineWidget(activeConnections) {
+      var users = activeConnections.map(function (conn) {
+        return conn.user;
+      });
       this.setState({ users: users });
     }
   }, {
@@ -24086,15 +24101,21 @@ var IndexPage = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
+      var _state2 = this.state,
+          socketConnected = _state2.socketConnected,
+          messages = _state2.messages,
+          users = _state2.users,
+          currentUser = _state2.currentUser;
+
       var allMessages = null;
 
-      if (this.state.socketConnected && this.state.messages) {
-        allMessages = this.state.messages.map(function (msg, ind) {
+      if (socketConnected && messages) {
+        allMessages = messages.map(function (msg, ind) {
           return _react2.default.createElement(ChatMessage, { key: ind, msg: msg });
         });
         setTimeout(this.autoScroll, 30);
       }
-      if (this.state.socketConnected) {
+      if (socketConnected) {
         return _react2.default.createElement(
           'div',
           { className: 'padding-bottom' },
@@ -24104,15 +24125,15 @@ var IndexPage = function (_Component) {
             _react2.default.createElement(
               'div',
               { className: 'row' },
+              _react2.default.createElement(_WhosOnlineWidget2.default, { users: users, currentUser: currentUser })
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'row' },
               _react2.default.createElement(
                 'div',
                 { id: 'messages', className: 'col-md-8 col-centered' },
                 allMessages
-              ),
-              _react2.default.createElement(
-                'div',
-                { className: 'col-md-2' },
-                _react2.default.createElement(_WhosOnlineWidget2.default, { users: this.state.users })
               )
             )
           ),
@@ -24130,11 +24151,11 @@ var IndexPage = function (_Component) {
                   { className: 'col-md-8 col-centered text-center' },
                   _react2.default.createElement(
                     'form',
-                    null,
-                    _react2.default.createElement('input', { id: 'inputField', type: 'text', placeholder: 'type a message', onSubmit: this.sendMsg, onChange: this.handleMsgInput, className: 'form-control input-lg', autoComplete: 'off' }),
+                    { onSubmit: this.sendMsg },
+                    _react2.default.createElement('input', { id: 'inputField', type: 'text', placeholder: 'type a message', onChange: this.handleMsgInput, className: 'form-control input-lg', autoComplete: 'off' }),
                     _react2.default.createElement(
                       'button',
-                      { onClick: this.sendMsg, className: 'btn btn-success btn-lg hidden' },
+                      { type: 'submit', className: 'btn btn-success btn-lg hidden' },
                       'Send'
                     )
                   )
@@ -24143,7 +24164,7 @@ var IndexPage = function (_Component) {
             )
           )
         );
-      } else if (!this.state.socketConnected) {
+      } else if (!socketConnected) {
         return _react2.default.createElement(
           'div',
           { className: 'container' },
@@ -24155,11 +24176,11 @@ var IndexPage = function (_Component) {
               { className: 'col-md-8 col-centered text-center' },
               _react2.default.createElement(
                 'form',
-                { className: 'form-inline' },
+                { className: 'form-inline', onSubmit: this.connectToSocket },
                 _react2.default.createElement('input', { id: 'inputField', type: 'text', placeholder: 'pick a username', onChange: this.handleNameInput, className: 'form-control', autoComplete: 'off' }),
                 _react2.default.createElement(
                   'button',
-                  { onClick: this.connectToSocket, className: 'btn btn-primary' },
+                  { type: 'submit', className: 'hidden' },
                   ' Join '
                 )
               )
@@ -24177,6 +24198,75 @@ exports.default = IndexPage;
 
 /***/ }),
 /* 80 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var WhosOnlineWidget = function (_Component) {
+  _inherits(WhosOnlineWidget, _Component);
+
+  function WhosOnlineWidget() {
+    _classCallCheck(this, WhosOnlineWidget);
+
+    return _possibleConstructorReturn(this, (WhosOnlineWidget.__proto__ || Object.getPrototypeOf(WhosOnlineWidget)).apply(this, arguments));
+  }
+
+  _createClass(WhosOnlineWidget, [{
+    key: 'render',
+    value: function render() {
+      var colors = ['#3AE8B0', '#19AFD0', '#6967CE', '#FFB900', '#FD636B'];
+      var _props = this.props,
+          users = _props.users,
+          currentUser = _props.currentUser;
+
+
+      var list = [];
+
+      if (users) {
+        list = users.map(function (user, ind) {
+          var name = currentUser === user ? user + ' (me)' : user;
+          return _react2.default.createElement(
+            'span',
+            { className: 'username-bubble', key: ind, style: { backgroundColor: colors[ind] } },
+            name
+          );
+        });
+      }
+
+      return _react2.default.createElement(
+        'div',
+        { id: 'whos-online-widget', className: 'col-md-8 col-centered text-center' },
+        list
+      );
+    }
+  }]);
+
+  return WhosOnlineWidget;
+}(_react.Component);
+
+exports.default = WhosOnlineWidget;
+
+/***/ }),
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24233,83 +24323,6 @@ var PageNotFound = function (_Component) {
 }(_react.Component);
 
 exports.default = PageNotFound;
-
-/***/ }),
-/* 81 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var WhosOnlineWidget = function (_Component) {
-  _inherits(WhosOnlineWidget, _Component);
-
-  function WhosOnlineWidget(props) {
-    _classCallCheck(this, WhosOnlineWidget);
-
-    var _this = _possibleConstructorReturn(this, (WhosOnlineWidget.__proto__ || Object.getPrototypeOf(WhosOnlineWidget)).call(this, props));
-
-    _this.state = {
-      users: []
-    };
-    return _this;
-  }
-
-  _createClass(WhosOnlineWidget, [{
-    key: 'render',
-    value: function render() {
-      var users = this.props.users;
-      var list = [];
-
-      if (users) {
-        list = this.state.users.map(function (user, ind) {
-          return _react2.default.createElement(
-            'div',
-            { key: ind },
-            _react2.default.createElement(
-              'p',
-              null,
-              user
-            )
-          );
-        });
-      }
-
-      return (
-        // THIS IS WHERE I STOPPED WORKING!!!!
-        // NEXT TO DO: MAKE THE WHOSONLINEWIDGET APPEAR ON THE PAGE
-        // see breadcrumbs in ChatUI.jsx
-        _react2.default.createElement(
-          'div',
-          null,
-          list
-        )
-      );
-    }
-  }]);
-
-  return WhosOnlineWidget;
-}(_react.Component);
-
-exports.default = WhosOnlineWidget;
 
 /***/ })
 /******/ ]);
