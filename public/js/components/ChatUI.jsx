@@ -80,26 +80,18 @@ export default class IndexPage extends Component {
 
   userJoined(user) {
     this.setState({
-      users: [
-        user,
-        ...this.state.users,
-      ],
       messages: [
         ...this.state.messages,
-        {name: '', msg: user + ' joined'},
+        { name: '', msg: user + ' joined' },
       ],
     });
   }
 
   userLeft(user) {
-    let users = [...this.state.users];
-    users.splice(users.indexOf(user), 1);
-
     this.setState({
-      users: users,
       messages: [
         ...this.state.messages,
-        {name: '', msg: user + ' left'},
+        { name: '', msg: user + ' left' },
       ],
     });
   }
@@ -117,7 +109,7 @@ export default class IndexPage extends Component {
     this.setState({
       messages: [
         ...this.state.messages,
-        {name: 'you', msg: message},
+        { name: 'me', msg: message },
       ],
       message: '',
     });
@@ -132,28 +124,27 @@ export default class IndexPage extends Component {
   connectToSocket(e) {
     e.preventDefault();
 
-    // connect to chat socket with chatroomID
     const socket = io(window.location.host);
+
+    // init socket on client to listen for and emit events
     this.setState({
       socketConnected: true,
-      socket: socket
+      socket: socket,
+      currentUser: this.state.username,
     });
     this.initSocketListeners(socket);
 
     console.log('Joining chatroom', this.state.chatroomID, 'with name: ', this.state.username)
+
+    // emit "join or create room" event
     socket.emit('join or create room', {
       username: this.state.username,
       chatroomID: this.state.chatroomID
     });
   }
 
-  updateOnlineWidget(connections) {
-    const users = [];
-    for (var i = 0; i < connections.length; i++) {
-      if (connections[i].id === this.state.chatroomID) {
-        users.push(connections[i]['user']);
-      }
-    }
+  updateOnlineWidget(activeConnections) {
+    const users = activeConnections.map(conn => conn.user);
     this.setState({ users: users });
   }
 
@@ -167,55 +158,57 @@ export default class IndexPage extends Component {
   }
 
   render() {
+    const {
+      socketConnected,
+      messages,
+      users,
+      currentUser,
+    } = this.state;
     let allMessages = null;
 
-    if (this.state.socketConnected && this.state.messages) {
-      allMessages = this.state.messages.map(function (msg, ind) {
+    if (socketConnected && messages) {
+      allMessages = messages.map(function (msg, ind) {
         return (
           <ChatMessage key={ind} msg={msg} />
         )
       });
       setTimeout(this.autoScroll, 30);
     }
-    if (this.state.socketConnected) {
+    if (socketConnected) {
       return (
         <div className="padding-bottom">
           <div className="container">
             <div className="row">
+              <WhosOnlineWidget users={users} currentUser={currentUser} />
+            </div>
+            <div className="row">
               <div id="messages" className="col-md-8 col-centered">
                 {allMessages}
               </div>
-              <div className="col-md-2">
-                <WhosOnlineWidget users={this.state.users} />
-              </div>
             </div>
           </div>
-
           <div className="navbar navbar-fixed-bottom">
             <div className="container">
               <div className="row">
                 <div className="col-md-8 col-centered text-center">
-                  <form>
-                    <input id="inputField" type="text" placeholder="type a message" onSubmit={this.sendMsg} onChange={this.handleMsgInput} className="form-control input-lg" autoComplete='off' />
-                    <button onClick={this.sendMsg} className="btn btn-success btn-lg hidden">Send</button>
+                  <form onSubmit={this.sendMsg}>
+                    <input id="inputField" type="text" placeholder="type a message" onChange={this.handleMsgInput} className="form-control input-lg" autoComplete='off' />
+                    <button type="submit" className="btn btn-success btn-lg hidden">Send</button>
                   </form>
                 </div>
               </div>
-
             </div>
           </div>
-
         </div>
-
       );
-    } else if (!this.state.socketConnected){
+    } else if (!socketConnected){
       return (
         <div className="container">
           <div className="row">
             <div className="col-md-8 col-centered text-center">
-              <form className="form-inline">
+              <form className="form-inline" onSubmit={this.connectToSocket}>
                 <input id="inputField" type="text" placeholder="pick a username" onChange={this.handleNameInput} className="form-control" autoComplete='off' />
-                <button onClick={this.connectToSocket} className="btn btn-primary"> Join </button>
+                <button type="submit" className="hidden"> Join </button>
               </form>
             </div>
           </div>

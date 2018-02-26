@@ -1,33 +1,28 @@
 import React, { Component } from 'react';
 
 export default class WhosOnlineWidget extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      users: []
-    }
-  }
-
   render() {
-    const users = this.props.users;
+    const colors = ['#3AE8B0', '#19AFD0', '#6967CE', '#FFB900', '#FD636B'];
+    const {
+      users,
+      currentUser,
+    } = this.props;
+
     let list = [];
 
     if (users) {
-      list = this.state.users.map(function (user, ind) {
+      list = users.map(function (user, ind) {
+        const name = currentUser === user ? `${user} (me)` : user;
         return (
-          <div key={ind}>
-            <p>{user}</p>
-          </div>
+          <span className="username-bubble" key={ind} style={{ backgroundColor: colors[ind] }}>
+            { name }
+          </span>
         )
       });
     }
 
     return (
-      // THIS IS WHERE I STOPPED WORKING!!!!
-      // NEXT TO DO: MAKE THE WHOSONLINEWIDGET APPEAR ON THE PAGE
-      // see breadcrumbs in ChatUI.jsx
-      <div>
+      <div id="whos-online-widget" className="col-md-8 col-centered text-center">
         {list}
       </div>
     );
