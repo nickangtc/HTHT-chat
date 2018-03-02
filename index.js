@@ -11,27 +11,6 @@ const io = require('socket.io')(server);
 
 // Logs all existing socket connections where 1 user is has 1 connection
 // [ {id, user, chatroomID}, {}, ... ]
-// var CONNECTIONS = [];
-const CONNECTIONS = allConnections() || [];
-
-// currently existing topics and their corresponding chatrooms
-const TOPICS = [
-  {
-    id: 1,
-    title: 'will we see AI in our lifetime?',
-    headCount: 2
-  },
-  {
-    id: 2,
-    title: 'the maddest US presidential elections ever',
-    headCount: 1
-  },
-  {
-    id: 3,
-    title: 'the beauty of trees in cities',
-    headCount: 3
-  }
-];
 
 // SERVER CONFIG
 app.use(express.static('./public'));
@@ -51,8 +30,13 @@ app.get('/', function (req, res) {
 app.get('/discuss/:id', function (req, res) {
   console.log("Rendering chatroom.ejs");
 
-  console.log(req.query);
-  res.render('chatroom', req.query );
+  // console.log(req.query);
+  db.chatroom_topic.findOne({
+    where: { title: req.query.topic }
+  }).then((chatroom) => {
+    console.log('>>>>> chatroom', chatroom.dataValues);
+    res.render('chatroom', chatroom.dataValues);
+  });
 });
 
 app.get('/topics', function (req, res) {
@@ -72,7 +56,7 @@ app.post('/topics', function (req, res) {
     where: {
       title: newTopic.title
     },
-    defaults: { active_users: 1 }
+    defaults: { active_users: 0 }
   }).then(function (topic, created) {
     // At the moment, no differentiation between creating and joining existing room
     const redirectPath = 'discuss/' + topic[0].dataValues.id + '?topic=' + encodeURIComponent(req.body.title);
@@ -96,7 +80,7 @@ function deleteConnection (id) {
   }).then(function () {
     console.log(`Connection ${id} deleted from db`);
     return true;
-  })
+  });
 }
 
 function getActiveConnections(roomId, done) {
@@ -116,7 +100,6 @@ server.listen(port, () => {
 // listen for a socket io connection event
 io.on('connection', (socket) => {
   // new connection, save the socket
-  // CONNECTIONS.push({id: socket.id})
   console.log("Creating new connection.");
   db.connections.create({
     socketID: socket.id
@@ -124,9 +107,8 @@ io.on('connection', (socket) => {
 
   console.log(`\n## New connection (${socket.id}).`)
 
-  // find or create chatroom
+  // listen for "join or create room" event
   socket.on('join or create room', function (data) {
-
     socket.join(data.chatroomID);
 
     // attach the new user and her chatroomID to the connection object
@@ -138,7 +120,6 @@ io.on('connection', (socket) => {
       returning: true,
       plain: true
     }).then(function (newConnection) {
-      // console.log("connection object returned after update:", newConnection[1].dataValues);
       const connection = newConnection[1].dataValues;
 
       // emit welcome message to new user
@@ -146,18 +127,23 @@ io.on('connection', (socket) => {
 
       // broadcast their arrival to everyone else
       getActiveConnections(data.chatroomID, (activeConnections) => {
-        console.log('\n\nactiveConnections:');
-        console.log(activeConnections);
         io.to(connection.chatroomID).emit('newcomer', data.username);
         io.to(connection.chatroomID).emit('online', activeConnections);
         console.log(`## ${connection.user} joined the chatroom (${connection.chatroomID}).`)
       });
+
+      db.chatroom_topic.findOne({
+        where: { id: connection.chatroomID },
+      }).then(function (chatroom) {
+        chatroom.active_users += 1;
+        chatroom.save();
+      });
     });
   });
 
-  // listen for a disconnect event
+  // listen for "disconnect" event
   socket.once('disconnect', () => {
-    // find the connection and remove  from the collection
+    // find the connection and remove from the collection
     let deleted = null;
 
     db.connections.findOne({
@@ -172,10 +158,22 @@ io.on('connection', (socket) => {
       }).then(function () {
         console.log(`Connection ${socket.id} deleted from db`);
 
+        db.chatroom_topic.findOne({
+          where: { id: deleted.chatroomID },
+        }).then(function (chatroom) {
+          chatroom.active_users -= 1;
+          chatroom.save();
+        });
+
         getActiveConnections(deleted.chatroomID, (activeConnections) => {
+          // broadcast who left and current active users
           io.to(deleted.chatroomID).emit('left', deleted.user);
           io.to(deleted.chatroomID).emit('online', activeConnections);
 
+          // delete the chatroom if last user has left
+          if (activeConnections.length === 0) {
+            db.chatroom_topic.destroy({ where: { id: deleted.chatroomID } });
+          }
           console.log(`## ${deleted.user}(${deleted.id}) disconnected. Remaining: ${activeConnections.length}.`)
         });
       })
@@ -183,7 +181,7 @@ io.on('connection', (socket) => {
     socket.disconnect();
   });
 
-  // broadcast chat message to other users
+  // listen for "chat" event
   socket.on('chat', (msg) => {
     db.connections.findOne({
       where: { socketID: socket.id }

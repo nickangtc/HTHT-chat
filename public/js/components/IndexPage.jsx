@@ -5,14 +5,33 @@ import NewTopicForm from './NewTopicForm.jsx';
 
 class TopicItem extends Component {
   render() {
+    const { topic } = this.props;
     const url = '/discuss/' + this.props.topic.id + '?topic=' + this.props.topic.title;
+    const colors = ['#BEFFB3', '#3AE8B0', '#19AFD0', '#6967CE', '#FFB900', '#FD636B'];
+    const badgeColor = colors[topic.active_users];
+    const preventJoining = topic.active_users >= 5 ? true : false;
+
+    if (preventJoining) {
+      return (
+        <li className="list-group-item">
+          <span>
+            { topic.title }&nbsp;
+            <span style={{ backgroundColor: badgeColor }} className="badge">
+              { topic.active_users }
+            </span>
+          </span>
+        </li>
+      );
+    }
     return (
       <li className="list-group-item">
         <a href={url}>
-          {this.props.topic.title}
+          { topic.title }&nbsp;
+          <span style={{ backgroundColor: badgeColor }} className="badge">
+            { topic.active_users }
+          </span>
         </a>
       </li>
-
     );
   }
 }
@@ -30,18 +49,13 @@ class TopicsContainer extends Component {
     $.ajax({
       method: 'GET',
       url: '/topics',
-      success: function (data) {
-        this.setState({ topics: data })
-      }.bind(this)
+      success: data => this.setState({ topics: data })
     });
   }
 
   render() {
-    const result = this.state.topics.map(function(topic) {
-      return (
-        <TopicItem key={topic.id} topic={topic} />
-      );
-    }.bind(this));
+    const { topics } = this.state;
+    const topicsList = topics.map(topic => <TopicItem key={topic.id} topic={topic} />);
 
     return (
       <div id="topics-list" className="container centralised">
@@ -51,11 +65,11 @@ class TopicsContainer extends Component {
               Ongoing conversations
             </h2>
             <h4>
-              only rooms with less than 5 people are shown because nobody likes talking in a market
+              a room can only accommodate 5 people
             </h4>
             <div className="panel panel-default margin-top">
               <ul className="list-group">
-                {result}
+                {topicsList}
               </ul>
             </div>
           </div>

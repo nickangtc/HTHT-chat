@@ -14,14 +14,16 @@
     <div class="container">
       <div class="row">
         <div class="col-md-8 col-centered text-center">
-          <h2><%= topic %></h2>
+          <h2><%= title %></h2>
         </div>
       </div>
 
       <div className="row" id="root"></div>
     </div>
 
-
+    <script type="text/javascript">
+      var active_users = <%= active_users %>
+    </script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://cdn.socket.io/socket.io-1.4.5.js"></script>

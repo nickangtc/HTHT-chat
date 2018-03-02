@@ -23605,14 +23605,43 @@ var TopicItem = function (_Component) {
   _createClass(TopicItem, [{
     key: 'render',
     value: function render() {
+      var topic = this.props.topic;
+
       var url = '/discuss/' + this.props.topic.id + '?topic=' + this.props.topic.title;
+      var colors = ['#BEFFB3', '#3AE8B0', '#19AFD0', '#6967CE', '#FFB900', '#FD636B'];
+      var badgeColor = colors[topic.active_users];
+      var preventJoining = topic.active_users >= 5 ? true : false;
+
+      if (preventJoining) {
+        return _react2.default.createElement(
+          'li',
+          { className: 'list-group-item' },
+          _react2.default.createElement(
+            'span',
+            null,
+            topic.title,
+            '\xA0',
+            _react2.default.createElement(
+              'span',
+              { style: { backgroundColor: badgeColor }, className: 'badge' },
+              topic.active_users
+            )
+          )
+        );
+      }
       return _react2.default.createElement(
         'li',
         { className: 'list-group-item' },
         _react2.default.createElement(
           'a',
           { href: url },
-          this.props.topic.title
+          topic.title,
+          '\xA0',
+          _react2.default.createElement(
+            'span',
+            { style: { backgroundColor: badgeColor }, className: 'badge' },
+            topic.active_users
+          )
         )
       );
     }
@@ -23638,20 +23667,24 @@ var TopicsContainer = function (_Component2) {
   _createClass(TopicsContainer, [{
     key: 'componentWillMount',
     value: function componentWillMount() {
+      var _this3 = this;
+
       $.ajax({
         method: 'GET',
         url: '/topics',
-        success: function (data) {
-          this.setState({ topics: data });
-        }.bind(this)
+        success: function success(data) {
+          return _this3.setState({ topics: data });
+        }
       });
     }
   }, {
     key: 'render',
     value: function render() {
-      var result = this.state.topics.map(function (topic) {
+      var topics = this.state.topics;
+
+      var topicsList = topics.map(function (topic) {
         return _react2.default.createElement(TopicItem, { key: topic.id, topic: topic });
-      }.bind(this));
+      });
 
       return _react2.default.createElement(
         'div',
@@ -23670,7 +23703,7 @@ var TopicsContainer = function (_Component2) {
             _react2.default.createElement(
               'h4',
               null,
-              'only rooms with less than 5 people are shown because nobody likes talking in a market'
+              'a room can only accommodate 5 people'
             ),
             _react2.default.createElement(
               'div',
@@ -23678,7 +23711,7 @@ var TopicsContainer = function (_Component2) {
               _react2.default.createElement(
                 'ul',
                 { className: 'list-group' },
-                result
+                topicsList
               )
             )
           )
@@ -24038,10 +24071,13 @@ var IndexPage = function (_Component) {
     key: 'sendMsg',
     value: function sendMsg(e) {
       e.preventDefault();
-
       var _state = this.state,
           socket = _state.socket,
           message = _state.message;
+
+      // ignore empty chat message submissions
+
+      if (message === '') return null;
 
       socket.emit('chat', message);
 
@@ -24061,7 +24097,14 @@ var IndexPage = function (_Component) {
     key: 'connectToSocket',
     value: function connectToSocket(e) {
       e.preventDefault();
+      var _state2 = this.state,
+          username = _state2.username,
+          chatroomID = _state2.chatroomID;
 
+
+      if (username === '') return null;
+
+      // create socket connection to server
       var socket = io(window.location.host);
 
       // init socket on client to listen for and emit events
@@ -24101,11 +24144,11 @@ var IndexPage = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _state2 = this.state,
-          socketConnected = _state2.socketConnected,
-          messages = _state2.messages,
-          users = _state2.users,
-          currentUser = _state2.currentUser;
+      var _state3 = this.state,
+          socketConnected = _state3.socketConnected,
+          messages = _state3.messages,
+          users = _state3.users,
+          currentUser = _state3.currentUser;
 
       var allMessages = null;
 
@@ -24174,7 +24217,12 @@ var IndexPage = function (_Component) {
             _react2.default.createElement(
               'div',
               { className: 'col-md-8 col-centered text-center' },
-              _react2.default.createElement(
+              active_users >= 5 && _react2.default.createElement(
+                'p',
+                { className: 'text-danger' },
+                'This room seems pretty popular. Join another room?'
+              ),
+              active_users < 5 && _react2.default.createElement(
                 'form',
                 { className: 'form-inline', onSubmit: this.connectToSocket },
                 _react2.default.createElement('input', { id: 'inputField', type: 'text', placeholder: 'pick a username', onChange: this.handleNameInput, className: 'form-control', autoComplete: 'off' }),

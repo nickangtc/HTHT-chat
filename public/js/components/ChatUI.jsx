@@ -102,8 +102,11 @@ export default class IndexPage extends Component {
 
   sendMsg(e) {
     e.preventDefault();
-
     const { socket, message } = this.state;
+
+    // ignore empty chat message submissions
+    if (message === '') return null;
+
     socket.emit('chat', message);
 
     this.setState({
@@ -123,7 +126,14 @@ export default class IndexPage extends Component {
 
   connectToSocket(e) {
     e.preventDefault();
+    const {
+      username,
+      chatroomID,
+    } = this.state;
 
+    if (username === '') return null;
+
+    // create socket connection to server
     const socket = io(window.location.host);
 
     // init socket on client to listen for and emit events
@@ -206,10 +216,17 @@ export default class IndexPage extends Component {
         <div className="container">
           <div className="row">
             <div className="col-md-8 col-centered text-center">
-              <form className="form-inline" onSubmit={this.connectToSocket}>
-                <input id="inputField" type="text" placeholder="pick a username" onChange={this.handleNameInput} className="form-control" autoComplete='off' />
-                <button type="submit" className="hidden"> Join </button>
-              </form>
+              { active_users >= 5 &&
+                <p className="text-danger">
+                  This room seems pretty popular. Join another room?
+                </p>
+              }
+              { active_users < 5 &&
+                <form className="form-inline" onSubmit={this.connectToSocket}>
+                  <input id="inputField" type="text" placeholder="pick a username" onChange={this.handleNameInput} className="form-control" autoComplete='off' />
+                  <button type="submit" className="hidden"> Join </button>
+                </form>
+              }
             </div>
           </div>
         </div>
