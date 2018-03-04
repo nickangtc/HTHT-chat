@@ -2432,11 +2432,11 @@ var _IndexPage = __webpack_require__(77);
 
 var _IndexPage2 = _interopRequireDefault(_IndexPage);
 
-var _ChatUI = __webpack_require__(79);
+var _ChatUI = __webpack_require__(80);
 
 var _ChatUI2 = _interopRequireDefault(_ChatUI);
 
-var _PageNotFound = __webpack_require__(81);
+var _PageNotFound = __webpack_require__(82);
 
 var _PageNotFound2 = _interopRequireDefault(_PageNotFound);
 
@@ -23585,6 +23585,8 @@ var _NewTopicForm = __webpack_require__(78);
 
 var _NewTopicForm2 = _interopRequireDefault(_NewTopicForm);
 
+var _ui = __webpack_require__(79);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -23755,7 +23757,9 @@ var IndexPage = function (_Component3) {
               _react2.default.createElement(_NewTopicForm2.default, null),
               _react2.default.createElement(
                 'a',
-                { className: 'btn btn-default btn-block margin-top', href: '#topics-list' },
+                { className: 'btn btn-default btn-block margin-top', onClick: function onClick() {
+                    return (0, _ui.smoothScroll)('topics-list');
+                  } },
                 'join an existing conversation'
               )
             )
@@ -23929,6 +23933,28 @@ exports.default = IndexPage;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+// animate scroll to specified element on page w/o '#' in resultant URL
+function smoothScroll(elementId) {
+  var el = $('#' + elementId);
+  if (el.length === 0) return null;
+
+  $('html, body').animate({
+    scrollTop: $(el).offset().top
+  }, 700);
+}
+
+exports.smoothScroll = smoothScroll;
+
+/***/ }),
+/* 80 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -23936,7 +23962,7 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _WhosOnlineWidget = __webpack_require__(80);
+var _WhosOnlineWidget = __webpack_require__(81);
 
 var _WhosOnlineWidget2 = _interopRequireDefault(_WhosOnlineWidget);
 
@@ -23952,19 +23978,22 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 
 var ChatMessage = function ChatMessage(props) {
+  var panelClass = 'panel-default';
+  if (props.msg.name === 'me') panelClass = 'panel-primary';
+
   return _react2.default.createElement(
     'div',
-    { className: 'row' },
+    { className: 'row chat-bubble' },
     _react2.default.createElement(
       'div',
       { className: 'col-md-12' },
       _react2.default.createElement(
         'div',
-        { className: 'panel panel-default' },
+        { className: 'panel ' + panelClass },
         _react2.default.createElement(
           'div',
           { className: 'panel-body' },
-          _react2.default.createElement(
+          props.msg.name !== 'me' && _react2.default.createElement(
             'small',
             null,
             props.msg.name
@@ -23980,13 +24009,16 @@ var ChatMessage = function ChatMessage(props) {
   );
 };
 
-var IndexPage = function (_Component) {
-  _inherits(IndexPage, _Component);
+var ChatUI = function (_Component) {
+  _inherits(ChatUI, _Component);
 
-  function IndexPage(props) {
-    _classCallCheck(this, IndexPage);
+  function ChatUI(props) {
+    _classCallCheck(this, ChatUI);
 
-    var _this = _possibleConstructorReturn(this, (IndexPage.__proto__ || Object.getPrototypeOf(IndexPage)).call(this, props));
+    // username colors
+    var _this = _possibleConstructorReturn(this, (ChatUI.__proto__ || Object.getPrototypeOf(ChatUI)).call(this, props));
+
+    _this.colors = ['#3AE8B0', '#19AFD0', '#6967CE', '#FFB900', '#FD636B'];
 
     _this.state = {
       chatroomID: '',
@@ -24013,7 +24045,7 @@ var IndexPage = function (_Component) {
     return _this;
   }
 
-  _createClass(IndexPage, [{
+  _createClass(ChatUI, [{
     key: 'componentWillMount',
     value: function componentWillMount() {
       // get page id from url
@@ -24168,7 +24200,7 @@ var IndexPage = function (_Component) {
             _react2.default.createElement(
               'div',
               { className: 'row' },
-              _react2.default.createElement(_WhosOnlineWidget2.default, { users: users, currentUser: currentUser })
+              _react2.default.createElement(_WhosOnlineWidget2.default, { users: users, currentUser: currentUser, colors: this.colors })
             ),
             _react2.default.createElement(
               'div',
@@ -24191,7 +24223,7 @@ var IndexPage = function (_Component) {
                 { className: 'row' },
                 _react2.default.createElement(
                   'div',
-                  { className: 'col-md-8 col-centered text-center' },
+                  { className: 'col-md-8 col-centered' },
                   _react2.default.createElement(
                     'form',
                     { onSubmit: this.sendMsg },
@@ -24239,13 +24271,13 @@ var IndexPage = function (_Component) {
     }
   }]);
 
-  return IndexPage;
+  return ChatUI;
 }(_react.Component);
 
-exports.default = IndexPage;
+exports.default = ChatUI;
 
 /***/ }),
-/* 80 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24279,30 +24311,30 @@ var WhosOnlineWidget = function (_Component) {
   }
 
   _createClass(WhosOnlineWidget, [{
-    key: 'render',
+    key: "render",
     value: function render() {
-      var colors = ['#3AE8B0', '#19AFD0', '#6967CE', '#FFB900', '#FD636B'];
       var _props = this.props,
           users = _props.users,
-          currentUser = _props.currentUser;
+          currentUser = _props.currentUser,
+          colors = _props.colors;
 
 
       var list = [];
 
       if (users) {
         list = users.map(function (user, ind) {
-          var name = currentUser === user ? user + ' (me)' : user;
+          var name = currentUser === user ? user + " (me)" : user;
           return _react2.default.createElement(
-            'span',
-            { className: 'username-bubble', key: ind, style: { backgroundColor: colors[ind] } },
+            "span",
+            { className: "username-bubble", key: ind, style: { backgroundColor: colors[ind] } },
             name
           );
         });
       }
 
       return _react2.default.createElement(
-        'div',
-        { id: 'whos-online-widget', className: 'col-md-8 col-centered text-center' },
+        "div",
+        { id: "whos-online-widget", className: "col-md-8 col-centered text-center" },
         list
       );
     }
@@ -24314,7 +24346,7 @@ var WhosOnlineWidget = function (_Component) {
 exports.default = WhosOnlineWidget;
 
 /***/ }),
-/* 81 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

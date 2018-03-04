@@ -10,6 +10,10 @@
   padding-bottom: 70px;
 }
 
+.chat-bubble p {
+  margin: 0;
+}
+
 .username-bubble {
   color: white;
   border-radius: 99em;

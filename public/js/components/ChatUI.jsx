@@ -5,12 +5,17 @@ import WhosOnlineWidget from './WhosOnlineWidget.jsx';
 
 
 const ChatMessage = (props) => {
+  let panelClass = 'panel-default';
+  if (props.msg.name === 'me') panelClass = 'panel-primary';
+
   return (
-    <div className="row">
+    <div className="row chat-bubble">
       <div className="col-md-12">
-        <div className="panel panel-default">
+        <div className={`panel ${panelClass}`}>
           <div className="panel-body">
-            <small>{props.msg.name}</small>
+            { props.msg.name !== 'me' &&
+              <small>{props.msg.name}</small>
+            }
             <p>{props.msg.msg}</p>
           </div>
         </div>
@@ -19,9 +24,12 @@ const ChatMessage = (props) => {
   );
 }
 
-export default class IndexPage extends Component {
+export default class ChatUI extends Component {
   constructor(props) {
     super(props);
+
+    // username colors
+    this.colors = ['#3AE8B0', '#19AFD0', '#6967CE', '#FFB900', '#FD636B'];
 
     this.state = {
       chatroomID: '',
@@ -189,7 +197,7 @@ export default class IndexPage extends Component {
         <div className="padding-bottom">
           <div className="container">
             <div className="row">
-              <WhosOnlineWidget users={users} currentUser={currentUser} />
+              <WhosOnlineWidget users={users} currentUser={currentUser} colors={this.colors} />
             </div>
             <div className="row">
               <div id="messages" className="col-md-8 col-centered">
@@ -200,7 +208,7 @@ export default class IndexPage extends Component {
           <div className="navbar navbar-fixed-bottom">
             <div className="container">
               <div className="row">
-                <div className="col-md-8 col-centered text-center">
+                <div className="col-md-8 col-centered">
                   <form onSubmit={this.sendMsg}>
                     <input id="inputField" type="text" placeholder="type a message" onChange={this.handleMsgInput} className="form-control input-lg" autoComplete='off' />
                     <button type="submit" className="btn btn-success btn-lg hidden">Send</button>

@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 
 export default class WhosOnlineWidget extends Component {
   render() {
-    const colors = ['#3AE8B0', '#19AFD0', '#6967CE', '#FFB900', '#FD636B'];
     const {
       users,
       currentUser,
+      colors,
     } = this.props;
 
     let list = [];

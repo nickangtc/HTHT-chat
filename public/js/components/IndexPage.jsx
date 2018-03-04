@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import NewTopicForm from './NewTopicForm.jsx';
+import { smoothScroll } from '../util/ui.js';
 
 
 class TopicItem extends Component {
@@ -90,7 +91,7 @@ export default class IndexPage extends Component {
 
               <NewTopicForm />
 
-              <a className="btn btn-default btn-block margin-top" href="#topics-list">
+              <a className="btn btn-default btn-block margin-top" onClick={() => smoothScroll('topics-list')}>
                 join an existing conversation
               </a>
 

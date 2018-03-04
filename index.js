@@ -9,8 +9,7 @@ const port = process.env.PORT || 3000;
 const server = http.createServer(app);
 const io = require('socket.io')(server);
 
-// Logs all existing socket connections where 1 user is has 1 connection
-// [ {id, user, chatroomID}, {}, ... ]
+const { getRandomInt } = require('./public/js/util/math.js');
 
 // SERVER CONFIG
 app.use(express.static('./public'));
@@ -23,24 +22,18 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 
 // SERVER ROUTES
 app.get('/', function (req, res) {
-  console.log("Rendering index.ejs")
   res.render('index');
 });
 
 app.get('/discuss/:id', function (req, res) {
-  console.log("Rendering chatroom.ejs");
-
-  // console.log(req.query);
   db.chatroom_topic.findOne({
     where: { title: req.query.topic }
   }).then((chatroom) => {
-    console.log('>>>>> chatroom', chatroom.dataValues);
     res.render('chatroom', chatroom.dataValues);
   });
 });
 
 app.get('/topics', function (req, res) {
-  console.log("Dispatching topics from server GET TOPICS");
   db.chatroom_topic.findAll().then(function (topics) {
     res.send(topics);
   });
@@ -48,19 +41,22 @@ app.get('/topics', function (req, res) {
 
 // Create new chatroom topic
 app.post('/topics', function (req, res) {
-  console.log("Received topic from front-end...");
-  console.log("req.body", req.body);
   const newTopic = req.body;
 
   db.chatroom_topic.findOrCreate({
     where: {
-      title: newTopic.title
+      title: newTopic.title,
     },
-    defaults: { active_users: 0 }
-  }).then(function (topic, created) {
-    // At the moment, no differentiation between creating and joining existing room
-    const redirectPath = 'discuss/' + topic[0].dataValues.id + '?topic=' + encodeURIComponent(req.body.title);
-    console.log('Redirecting to', '/discuss/' + topic[0].dataValues.id + '?topic=' + req.body.title);
+    defaults: {
+      active_users: 0,
+    },
+  }).spread(function (topic, created) {
+    let roomId = topic.dataValues.id;
+    let roomName = topic.dataValues.title;
+
+    // construct redirect url and send response
+    const redirectPath = 'discuss/' + roomId + '?topic=' + encodeURIComponent(roomName);
+    console.log('Redirecting to', '/discuss/' + roomId + '?topic=' + roomName);
     res.send(redirectPath);
   });
 });
