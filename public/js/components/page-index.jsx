@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import NewTopicForm from './NewTopicForm.jsx';
+import CreateTopicForm from './form-create-topic.jsx';
 import { smoothScroll } from '../util/ui.js';
 
 
@@ -119,7 +119,7 @@ export default class IndexPage extends Component {
           <div className="row">
             <div className="col-md-6 col-centered text-center">
               <h3>What's on your mind right now?</h3>
-              <NewTopicForm createOrRedirect={this.createOrRedirect} />
+              <CreateTopicForm createOrRedirect={this.createOrRedirect} />
               <a className="btn btn-default btn-block margin-top" onClick={() => smoothScroll('topics-list')}>
                 join an existing conversation
               </a>

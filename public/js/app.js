@@ -3,10 +3,9 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 
-// import Layout from './components/Layout';
-import IndexPage from './components/IndexPage.jsx';
-import ChatUI from './components/ChatUI.jsx';
-import PageNotFound from './components/PageNotFound.jsx';
+import IndexPage from './components/page-index.jsx';
+import ChatApp from './components/app-chat.jsx';
+import Page404 from './components/page-404.jsx';
 
 
 const App = () => {
@@ -14,7 +13,7 @@ const App = () => {
     <div>
       <Switch>
         <Route exact path="/" component={IndexPage} />
-        <Route path="/discuss" component={ChatUI} />
+        <Route path="/discuss" component={ChatApp} />
       </Switch>
     </div>
   );

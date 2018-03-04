@@ -2428,17 +2428,17 @@ var _reactDom2 = _interopRequireDefault(_reactDom);
 
 var _reactRouterDom = __webpack_require__(47);
 
-var _IndexPage = __webpack_require__(77);
+var _pageIndex = __webpack_require__(93);
 
-var _IndexPage2 = _interopRequireDefault(_IndexPage);
+var _pageIndex2 = _interopRequireDefault(_pageIndex);
 
-var _ChatUI = __webpack_require__(80);
+var _appChat = __webpack_require__(92);
 
-var _ChatUI2 = _interopRequireDefault(_ChatUI);
+var _appChat2 = _interopRequireDefault(_appChat);
 
-var _PageNotFound = __webpack_require__(82);
+var _page = __webpack_require__(88);
 
-var _PageNotFound2 = _interopRequireDefault(_PageNotFound);
+var _page2 = _interopRequireDefault(_page);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2450,14 +2450,11 @@ var App = function App() {
     _react2.default.createElement(
       _reactRouterDom.Switch,
       null,
-      _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: _IndexPage2.default }),
-      _react2.default.createElement(_reactRouterDom.Route, { path: '/discuss', component: _ChatUI2.default })
+      _react2.default.createElement(_reactRouterDom.Route, { exact: true, path: '/', component: _pageIndex2.default }),
+      _react2.default.createElement(_reactRouterDom.Route, { path: '/discuss', component: _appChat2.default })
     )
   );
 };
-
-// import Layout from './components/Layout';
-
 
 window.onload = function () {
   _reactDom2.default.render(_react2.default.createElement(
@@ -23565,7 +23562,39 @@ var withRouter = function withRouter(Component) {
 
 
 /***/ }),
-/* 77 */
+/* 77 */,
+/* 78 */,
+/* 79 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+// animate scroll to specified element on page w/o '#' in resultant URL
+function smoothScroll(elementId) {
+  var el = $('#' + elementId);
+  if (el.length === 0) return null;
+
+  $('html, body').animate({
+    scrollTop: $(el).offset().top
+  }, 700);
+}
+
+exports.smoothScroll = smoothScroll;
+
+/***/ }),
+/* 80 */,
+/* 81 */,
+/* 82 */,
+/* 83 */,
+/* 84 */,
+/* 85 */,
+/* 86 */,
+/* 87 */,
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -23581,9 +23610,602 @@ var _react = __webpack_require__(0);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _NewTopicForm = __webpack_require__(78);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var _NewTopicForm2 = _interopRequireDefault(_NewTopicForm);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Page404 = function (_Component) {
+  _inherits(Page404, _Component);
+
+  function Page404() {
+    _classCallCheck(this, Page404);
+
+    return _possibleConstructorReturn(this, (Page404.__proto__ || Object.getPrototypeOf(Page404)).apply(this, arguments));
+  }
+
+  _createClass(Page404, [{
+    key: "render",
+    value: function render() {
+      return _react2.default.createElement(
+        "div",
+        { className: "row" },
+        _react2.default.createElement(
+          "h1",
+          null,
+          "Oops, that's embarrassing"
+        ),
+        _react2.default.createElement(
+          "p",
+          null,
+          "Page not found!"
+        )
+      );
+    }
+  }]);
+
+  return Page404;
+}(_react.Component);
+
+exports.default = Page404;
+
+/***/ }),
+/* 89 */,
+/* 90 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var OnlineStatusWidget = function (_Component) {
+  _inherits(OnlineStatusWidget, _Component);
+
+  function OnlineStatusWidget() {
+    _classCallCheck(this, OnlineStatusWidget);
+
+    return _possibleConstructorReturn(this, (OnlineStatusWidget.__proto__ || Object.getPrototypeOf(OnlineStatusWidget)).apply(this, arguments));
+  }
+
+  _createClass(OnlineStatusWidget, [{
+    key: "render",
+    value: function render() {
+      var _props = this.props,
+          users = _props.users,
+          currentUser = _props.currentUser,
+          colors = _props.colors;
+
+
+      var list = [];
+
+      if (users) {
+        list = users.map(function (user, ind) {
+          var name = currentUser === user ? user + " (me)" : user;
+          return _react2.default.createElement(
+            "span",
+            { className: "username-bubble", key: ind, style: { backgroundColor: colors[ind] } },
+            name
+          );
+        });
+      }
+
+      return _react2.default.createElement(
+        "div",
+        { id: "whos-online-widget", className: "col-md-8 col-centered text-center" },
+        list
+      );
+    }
+  }]);
+
+  return OnlineStatusWidget;
+}(_react.Component);
+
+exports.default = OnlineStatusWidget;
+
+/***/ }),
+/* 91 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var CreateTopicForm = function (_Component) {
+  _inherits(CreateTopicForm, _Component);
+
+  function CreateTopicForm(props) {
+    _classCallCheck(this, CreateTopicForm);
+
+    var _this = _possibleConstructorReturn(this, (CreateTopicForm.__proto__ || Object.getPrototypeOf(CreateTopicForm)).call(this, props));
+
+    _this.state = {
+      topic: '',
+      topics: [],
+      error: false
+
+      // Bindings
+    };_this.handleTopicInput = _this.handleTopicInput.bind(_this);
+    _this.handleCreate = _this.handleCreate.bind(_this);
+    _this.findSimilarTopics = _this.findSimilarTopics.bind(_this);
+    return _this;
+  }
+
+  _createClass(CreateTopicForm, [{
+    key: 'componentWillMount',
+    value: function componentWillMount() {
+      var _this2 = this;
+
+      $(document).on("keypress", function () {
+        $("#topic-input").focus();
+      });
+      $.ajax({
+        method: 'GET',
+        url: '/topics',
+        success: function success(data) {
+          _this2.setState({ topics: data });
+        }
+      });
+    }
+  }, {
+    key: 'handleTopicInput',
+    value: function handleTopicInput(e) {
+      this.setState({ topic: e.target.value });
+    }
+  }, {
+    key: 'handleCreate',
+    value: function handleCreate(e) {
+      e.preventDefault();
+
+      this.props.createOrRedirect(this.state.topic);
+    }
+  }, {
+    key: 'findSimilarTopics',
+    value: function findSimilarTopics(searchTerm) {
+      var result = [];
+      var term = searchTerm.toLowerCase();
+      if (this.state.topics) {
+        for (var i = 0; i < this.state.topics.length; i++) {
+          var topic = this.state.topics[i].title.toLowerCase();
+          if (topic.includes(term)) {
+            result.push(this.state.topics[i].title);
+          }
+        }
+        var similarTopics = result.map(function (topic, index) {
+          return _react2.default.createElement('option', { value: topic, key: index });
+        });
+        return similarTopics;
+      } else {
+        return '';
+      }
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'form',
+        { onSubmit: this.handleCreate },
+        _react2.default.createElement(
+          'datalist',
+          { id: 'similar-topics' },
+          this.findSimilarTopics(this.state.topic)
+        ),
+        this.state.error && _react2.default.createElement(
+          'div',
+          { className: 'form-group' },
+          _react2.default.createElement(
+            'p',
+            { style: { color: 'red', textAlign: 'left' } },
+            this.state.error
+          )
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'form-group' },
+          _react2.default.createElement('input', { id: 'topic-input', list: 'similar-topics', type: 'text', onChange: this.handleTopicInput, placeholder: 'how will AI co-exist with humanity 20 years from now?', className: 'form-control' })
+        ),
+        _react2.default.createElement(
+          'button',
+          { type: 'submit', className: 'btn btn-success btn-lg btn-block' },
+          'proceed to room'
+        )
+      );
+    }
+  }]);
+
+  return CreateTopicForm;
+}(_react.Component);
+
+exports.default = CreateTopicForm;
+
+/***/ }),
+/* 92 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _widgetOnlineStatus = __webpack_require__(90);
+
+var _widgetOnlineStatus2 = _interopRequireDefault(_widgetOnlineStatus);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var ChatBubble = function ChatBubble(props) {
+  var panelClass = 'panel-default';
+  if (props.msg.name === 'me') panelClass = 'panel-primary';
+
+  return _react2.default.createElement(
+    'div',
+    { className: 'row chat-bubble' },
+    _react2.default.createElement(
+      'div',
+      { className: 'col-md-12' },
+      _react2.default.createElement(
+        'div',
+        { className: 'panel ' + panelClass },
+        _react2.default.createElement(
+          'div',
+          { className: 'panel-body' },
+          props.msg.name !== 'me' && _react2.default.createElement(
+            'small',
+            null,
+            props.msg.name
+          ),
+          _react2.default.createElement(
+            'p',
+            null,
+            props.msg.msg
+          )
+        )
+      )
+    )
+  );
+};
+
+var ChatApp = function (_Component) {
+  _inherits(ChatApp, _Component);
+
+  function ChatApp(props) {
+    _classCallCheck(this, ChatApp);
+
+    // username colors
+    var _this = _possibleConstructorReturn(this, (ChatApp.__proto__ || Object.getPrototypeOf(ChatApp)).call(this, props));
+
+    _this.colors = ['#3AE8B0', '#19AFD0', '#6967CE', '#FFB900', '#FD636B'];
+
+    _this.state = {
+      chatroomID: '',
+      username: '',
+      users: [],
+      formIsDisabled: true,
+      socketConnected: false,
+      socket: '',
+      message: '',
+      messages: []
+    };
+
+    // Bindings
+    _this.initSocketListeners = _this.initSocketListeners.bind(_this);
+    _this.messageRecieve = _this.messageRecieve.bind(_this);
+    _this.userJoined = _this.userJoined.bind(_this);
+    _this.userLeft = _this.userLeft.bind(_this);
+    _this.handleMsgInput = _this.handleMsgInput.bind(_this);
+    _this.sendMsg = _this.sendMsg.bind(_this);
+    _this.handleNameInput = _this.handleNameInput.bind(_this);
+    _this.connectToSocket = _this.connectToSocket.bind(_this);
+    _this.updateOnlineWidget = _this.updateOnlineWidget.bind(_this);
+    _this.autoScroll = _this.autoScroll.bind(_this);
+    return _this;
+  }
+
+  _createClass(ChatApp, [{
+    key: 'componentWillMount',
+    value: function componentWillMount() {
+      // get page id from url
+      var url = window.location.pathname.toString();
+      var startSliceIndex = url.indexOf('/', 1) + 1;
+      var id = url.slice(startSliceIndex);
+      this.setState({ chatroomID: id });
+
+      // on any keypress, autofocus to input field
+      $(document).on("keypress", function () {
+        $("#inputField").focus();
+      });
+    }
+  }, {
+    key: 'initSocketListeners',
+    value: function initSocketListeners(socket) {
+      socket.on('chat', this.messageRecieve);
+      socket.on('newcomer', this.userJoined);
+      socket.on('left', this.userLeft);
+      socket.on('online', this.updateOnlineWidget);
+      socket.on('connected', function () {
+        console.log('Connected to Chat Socket');
+      });
+      socket.on('disconnect', function () {
+        console.log('Disconnected from Chat Socket');
+      });
+    }
+  }, {
+    key: 'messageRecieve',
+    value: function messageRecieve(msg) {
+      this.setState({
+        messages: [].concat(_toConsumableArray(this.state.messages), [{ name: msg.user, msg: msg.message }])
+      });
+    }
+  }, {
+    key: 'userJoined',
+    value: function userJoined(user) {
+      this.setState({
+        messages: [].concat(_toConsumableArray(this.state.messages), [{ name: '', msg: user + ' joined' }])
+      });
+    }
+  }, {
+    key: 'userLeft',
+    value: function userLeft(user) {
+      this.setState({
+        messages: [].concat(_toConsumableArray(this.state.messages), [{ name: '', msg: user + ' left' }])
+      });
+    }
+  }, {
+    key: 'handleMsgInput',
+    value: function handleMsgInput(e) {
+      this.setState({ message: e.target.value });
+    }
+  }, {
+    key: 'sendMsg',
+    value: function sendMsg(e) {
+      e.preventDefault();
+      var _state = this.state,
+          socket = _state.socket,
+          message = _state.message;
+
+      // ignore empty chat message submissions
+
+      if (message === '') return null;
+
+      socket.emit('chat', message);
+
+      this.setState({
+        messages: [].concat(_toConsumableArray(this.state.messages), [{ name: 'me', msg: message }]),
+        message: ''
+      });
+
+      $('#inputField').val('');
+    }
+  }, {
+    key: 'handleNameInput',
+    value: function handleNameInput(e) {
+      this.setState({ username: e.target.value });
+    }
+  }, {
+    key: 'connectToSocket',
+    value: function connectToSocket(e) {
+      e.preventDefault();
+      var _state2 = this.state,
+          username = _state2.username,
+          chatroomID = _state2.chatroomID;
+
+
+      if (username === '') return null;
+
+      // create socket connection to server
+      var socket = io(window.location.host);
+
+      // init socket on client to listen for and emit events
+      this.setState({
+        socketConnected: true,
+        socket: socket,
+        currentUser: this.state.username
+      });
+      this.initSocketListeners(socket);
+
+      console.log('Joining chatroom', this.state.chatroomID, 'with name: ', this.state.username);
+
+      // emit "join or create room" event
+      socket.emit('join or create room', {
+        username: this.state.username,
+        chatroomID: this.state.chatroomID
+      });
+    }
+  }, {
+    key: 'updateOnlineWidget',
+    value: function updateOnlineWidget(activeConnections) {
+      var users = activeConnections.map(function (conn) {
+        return conn.user;
+      });
+      this.setState({ users: users });
+    }
+  }, {
+    key: 'autoScroll',
+    value: function autoScroll() {
+      var messagesDiv = $('#messages');
+      if (messagesDiv) {
+        messagesDiv.stop().animate({
+          scrollTop: messagesDiv[0].scrollHeight
+        }, 1500);
+      }
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _state3 = this.state,
+          socketConnected = _state3.socketConnected,
+          messages = _state3.messages,
+          users = _state3.users,
+          currentUser = _state3.currentUser;
+
+      var allMessages = null;
+
+      if (socketConnected && messages) {
+        allMessages = messages.map(function (msg, ind) {
+          return _react2.default.createElement(ChatBubble, { key: ind, msg: msg });
+        });
+        setTimeout(this.autoScroll, 30);
+      }
+      if (socketConnected) {
+        return _react2.default.createElement(
+          'div',
+          { className: 'padding-bottom' },
+          _react2.default.createElement(
+            'div',
+            { className: 'container' },
+            _react2.default.createElement(
+              'div',
+              { className: 'row' },
+              _react2.default.createElement(_widgetOnlineStatus2.default, { users: users, currentUser: currentUser, colors: this.colors })
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'row' },
+              _react2.default.createElement(
+                'div',
+                { id: 'messages', className: 'col-md-8 col-centered' },
+                allMessages
+              )
+            )
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'navbar navbar-fixed-bottom' },
+            _react2.default.createElement(
+              'div',
+              { className: 'container' },
+              _react2.default.createElement(
+                'div',
+                { className: 'row' },
+                _react2.default.createElement(
+                  'div',
+                  { className: 'col-md-8 col-centered' },
+                  _react2.default.createElement(
+                    'form',
+                    { onSubmit: this.sendMsg },
+                    _react2.default.createElement('input', { id: 'inputField', type: 'text', placeholder: 'type a message', onChange: this.handleMsgInput, className: 'form-control input-lg', autoComplete: 'off' }),
+                    _react2.default.createElement(
+                      'button',
+                      { type: 'submit', className: 'btn btn-success btn-lg hidden' },
+                      'Send'
+                    )
+                  )
+                )
+              )
+            )
+          )
+        );
+      } else if (!socketConnected) {
+        return _react2.default.createElement(
+          'div',
+          { className: 'container' },
+          _react2.default.createElement(
+            'div',
+            { className: 'row' },
+            _react2.default.createElement(
+              'div',
+              { className: 'col-md-8 col-centered text-center' },
+              active_users >= 5 && _react2.default.createElement(
+                'p',
+                { className: 'text-danger' },
+                'This room seems pretty popular. Join another room?',
+                _react2.default.createElement('br', null),
+                'Alternatively, create a new room with a slightly different title.'
+              ),
+              active_users < 5 && _react2.default.createElement(
+                'form',
+                { className: 'form-inline', onSubmit: this.connectToSocket },
+                _react2.default.createElement('input', { id: 'inputField', type: 'text', placeholder: 'pick a username', onChange: this.handleNameInput, className: 'form-control', autoComplete: 'off' }),
+                _react2.default.createElement(
+                  'button',
+                  { type: 'submit', className: 'hidden' },
+                  ' Join '
+                )
+              )
+            )
+          )
+        );
+      }
+    }
+  }]);
+
+  return ChatApp;
+}(_react.Component);
+
+exports.default = ChatApp;
+
+/***/ }),
+/* 93 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _formCreateTopic = __webpack_require__(91);
+
+var _formCreateTopic2 = _interopRequireDefault(_formCreateTopic);
 
 var _ui = __webpack_require__(79);
 
@@ -23780,7 +24402,7 @@ var IndexPage = function (_Component3) {
                 null,
                 'What\'s on your mind right now?'
               ),
-              _react2.default.createElement(_NewTopicForm2.default, { createOrRedirect: this.createOrRedirect }),
+              _react2.default.createElement(_formCreateTopic2.default, { createOrRedirect: this.createOrRedirect }),
               _react2.default.createElement(
                 'a',
                 { className: 'btn btn-default btn-block margin-top', onClick: function onClick() {
@@ -23800,621 +24422,6 @@ var IndexPage = function (_Component3) {
 }(_react.Component);
 
 exports.default = IndexPage;
-
-/***/ }),
-/* 78 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var NewTopicForm = function (_Component) {
-  _inherits(NewTopicForm, _Component);
-
-  function NewTopicForm(props) {
-    _classCallCheck(this, NewTopicForm);
-
-    var _this = _possibleConstructorReturn(this, (NewTopicForm.__proto__ || Object.getPrototypeOf(NewTopicForm)).call(this, props));
-
-    _this.state = {
-      topic: '',
-      topics: [],
-      error: false
-
-      // Bindings
-    };_this.handleTopicInput = _this.handleTopicInput.bind(_this);
-    _this.handleCreate = _this.handleCreate.bind(_this);
-    _this.findSimilarTopics = _this.findSimilarTopics.bind(_this);
-    return _this;
-  }
-
-  _createClass(NewTopicForm, [{
-    key: 'componentWillMount',
-    value: function componentWillMount() {
-      var _this2 = this;
-
-      $(document).on("keypress", function () {
-        $("#topic-input").focus();
-      });
-      $.ajax({
-        method: 'GET',
-        url: '/topics',
-        success: function success(data) {
-          _this2.setState({ topics: data });
-        }
-      });
-    }
-  }, {
-    key: 'handleTopicInput',
-    value: function handleTopicInput(e) {
-      this.setState({ topic: e.target.value });
-    }
-  }, {
-    key: 'handleCreate',
-    value: function handleCreate(e) {
-      e.preventDefault();
-
-      this.props.createOrRedirect(this.state.topic);
-    }
-  }, {
-    key: 'findSimilarTopics',
-    value: function findSimilarTopics(searchTerm) {
-      var result = [];
-      var term = searchTerm.toLowerCase();
-      if (this.state.topics) {
-        for (var i = 0; i < this.state.topics.length; i++) {
-          var topic = this.state.topics[i].title.toLowerCase();
-          if (topic.includes(term)) {
-            result.push(this.state.topics[i].title);
-          }
-        }
-        var similarTopics = result.map(function (topic, index) {
-          return _react2.default.createElement('option', { value: topic, key: index });
-        });
-        return similarTopics;
-      } else {
-        return '';
-      }
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        'form',
-        { onSubmit: this.handleCreate },
-        _react2.default.createElement(
-          'datalist',
-          { id: 'similar-topics' },
-          this.findSimilarTopics(this.state.topic)
-        ),
-        this.state.error && _react2.default.createElement(
-          'div',
-          { className: 'form-group' },
-          _react2.default.createElement(
-            'p',
-            { style: { color: 'red', textAlign: 'left' } },
-            this.state.error
-          )
-        ),
-        _react2.default.createElement(
-          'div',
-          { className: 'form-group' },
-          _react2.default.createElement('input', { id: 'topic-input', list: 'similar-topics', type: 'text', onChange: this.handleTopicInput, placeholder: 'how will AI co-exist with humanity 20 years from now?', className: 'form-control' })
-        ),
-        _react2.default.createElement(
-          'button',
-          { type: 'submit', className: 'btn btn-success btn-lg btn-block' },
-          'proceed to room'
-        )
-      );
-    }
-  }]);
-
-  return NewTopicForm;
-}(_react.Component);
-
-exports.default = NewTopicForm;
-
-/***/ }),
-/* 79 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-// animate scroll to specified element on page w/o '#' in resultant URL
-function smoothScroll(elementId) {
-  var el = $('#' + elementId);
-  if (el.length === 0) return null;
-
-  $('html, body').animate({
-    scrollTop: $(el).offset().top
-  }, 700);
-}
-
-exports.smoothScroll = smoothScroll;
-
-/***/ }),
-/* 80 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _WhosOnlineWidget = __webpack_require__(81);
-
-var _WhosOnlineWidget2 = _interopRequireDefault(_WhosOnlineWidget);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // TODO: updateOnlineWidget and render <WhosOnlineWidget />
-
-
-var ChatMessage = function ChatMessage(props) {
-  var panelClass = 'panel-default';
-  if (props.msg.name === 'me') panelClass = 'panel-primary';
-
-  return _react2.default.createElement(
-    'div',
-    { className: 'row chat-bubble' },
-    _react2.default.createElement(
-      'div',
-      { className: 'col-md-12' },
-      _react2.default.createElement(
-        'div',
-        { className: 'panel ' + panelClass },
-        _react2.default.createElement(
-          'div',
-          { className: 'panel-body' },
-          props.msg.name !== 'me' && _react2.default.createElement(
-            'small',
-            null,
-            props.msg.name
-          ),
-          _react2.default.createElement(
-            'p',
-            null,
-            props.msg.msg
-          )
-        )
-      )
-    )
-  );
-};
-
-var ChatUI = function (_Component) {
-  _inherits(ChatUI, _Component);
-
-  function ChatUI(props) {
-    _classCallCheck(this, ChatUI);
-
-    // username colors
-    var _this = _possibleConstructorReturn(this, (ChatUI.__proto__ || Object.getPrototypeOf(ChatUI)).call(this, props));
-
-    _this.colors = ['#3AE8B0', '#19AFD0', '#6967CE', '#FFB900', '#FD636B'];
-
-    _this.state = {
-      chatroomID: '',
-      username: '',
-      users: [],
-      formIsDisabled: true,
-      socketConnected: false,
-      socket: '',
-      message: '',
-      messages: []
-    };
-
-    // Bindings
-    _this.initSocketListeners = _this.initSocketListeners.bind(_this);
-    _this.messageRecieve = _this.messageRecieve.bind(_this);
-    _this.userJoined = _this.userJoined.bind(_this);
-    _this.userLeft = _this.userLeft.bind(_this);
-    _this.handleMsgInput = _this.handleMsgInput.bind(_this);
-    _this.sendMsg = _this.sendMsg.bind(_this);
-    _this.handleNameInput = _this.handleNameInput.bind(_this);
-    _this.connectToSocket = _this.connectToSocket.bind(_this);
-    _this.updateOnlineWidget = _this.updateOnlineWidget.bind(_this);
-    _this.autoScroll = _this.autoScroll.bind(_this);
-    return _this;
-  }
-
-  _createClass(ChatUI, [{
-    key: 'componentWillMount',
-    value: function componentWillMount() {
-      // get page id from url
-      var url = window.location.pathname.toString();
-      var startSliceIndex = url.indexOf('/', 1) + 1;
-      var id = url.slice(startSliceIndex);
-      this.setState({ chatroomID: id });
-
-      // on any keypress, autofocus to input field
-      $(document).on("keypress", function () {
-        $("#inputField").focus();
-      });
-    }
-  }, {
-    key: 'initSocketListeners',
-    value: function initSocketListeners(socket) {
-      socket.on('chat', this.messageRecieve);
-      socket.on('newcomer', this.userJoined);
-      socket.on('left', this.userLeft);
-      socket.on('online', this.updateOnlineWidget);
-      socket.on('connected', function () {
-        console.log('Connected to Chat Socket');
-      });
-      socket.on('disconnect', function () {
-        console.log('Disconnected from Chat Socket');
-      });
-    }
-  }, {
-    key: 'messageRecieve',
-    value: function messageRecieve(msg) {
-      this.setState({
-        messages: [].concat(_toConsumableArray(this.state.messages), [{ name: msg.user, msg: msg.message }])
-      });
-    }
-  }, {
-    key: 'userJoined',
-    value: function userJoined(user) {
-      this.setState({
-        messages: [].concat(_toConsumableArray(this.state.messages), [{ name: '', msg: user + ' joined' }])
-      });
-    }
-  }, {
-    key: 'userLeft',
-    value: function userLeft(user) {
-      this.setState({
-        messages: [].concat(_toConsumableArray(this.state.messages), [{ name: '', msg: user + ' left' }])
-      });
-    }
-  }, {
-    key: 'handleMsgInput',
-    value: function handleMsgInput(e) {
-      this.setState({ message: e.target.value });
-    }
-  }, {
-    key: 'sendMsg',
-    value: function sendMsg(e) {
-      e.preventDefault();
-      var _state = this.state,
-          socket = _state.socket,
-          message = _state.message;
-
-      // ignore empty chat message submissions
-
-      if (message === '') return null;
-
-      socket.emit('chat', message);
-
-      this.setState({
-        messages: [].concat(_toConsumableArray(this.state.messages), [{ name: 'me', msg: message }]),
-        message: ''
-      });
-
-      $('#inputField').val('');
-    }
-  }, {
-    key: 'handleNameInput',
-    value: function handleNameInput(e) {
-      this.setState({ username: e.target.value });
-    }
-  }, {
-    key: 'connectToSocket',
-    value: function connectToSocket(e) {
-      e.preventDefault();
-      var _state2 = this.state,
-          username = _state2.username,
-          chatroomID = _state2.chatroomID;
-
-
-      if (username === '') return null;
-
-      // create socket connection to server
-      var socket = io(window.location.host);
-
-      // init socket on client to listen for and emit events
-      this.setState({
-        socketConnected: true,
-        socket: socket,
-        currentUser: this.state.username
-      });
-      this.initSocketListeners(socket);
-
-      console.log('Joining chatroom', this.state.chatroomID, 'with name: ', this.state.username);
-
-      // emit "join or create room" event
-      socket.emit('join or create room', {
-        username: this.state.username,
-        chatroomID: this.state.chatroomID
-      });
-    }
-  }, {
-    key: 'updateOnlineWidget',
-    value: function updateOnlineWidget(activeConnections) {
-      var users = activeConnections.map(function (conn) {
-        return conn.user;
-      });
-      this.setState({ users: users });
-    }
-  }, {
-    key: 'autoScroll',
-    value: function autoScroll() {
-      var messagesDiv = $('#messages');
-      if (messagesDiv) {
-        messagesDiv.stop().animate({
-          scrollTop: messagesDiv[0].scrollHeight
-        }, 1500);
-      }
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      var _state3 = this.state,
-          socketConnected = _state3.socketConnected,
-          messages = _state3.messages,
-          users = _state3.users,
-          currentUser = _state3.currentUser;
-
-      var allMessages = null;
-
-      if (socketConnected && messages) {
-        allMessages = messages.map(function (msg, ind) {
-          return _react2.default.createElement(ChatMessage, { key: ind, msg: msg });
-        });
-        setTimeout(this.autoScroll, 30);
-      }
-      if (socketConnected) {
-        return _react2.default.createElement(
-          'div',
-          { className: 'padding-bottom' },
-          _react2.default.createElement(
-            'div',
-            { className: 'container' },
-            _react2.default.createElement(
-              'div',
-              { className: 'row' },
-              _react2.default.createElement(_WhosOnlineWidget2.default, { users: users, currentUser: currentUser, colors: this.colors })
-            ),
-            _react2.default.createElement(
-              'div',
-              { className: 'row' },
-              _react2.default.createElement(
-                'div',
-                { id: 'messages', className: 'col-md-8 col-centered' },
-                allMessages
-              )
-            )
-          ),
-          _react2.default.createElement(
-            'div',
-            { className: 'navbar navbar-fixed-bottom' },
-            _react2.default.createElement(
-              'div',
-              { className: 'container' },
-              _react2.default.createElement(
-                'div',
-                { className: 'row' },
-                _react2.default.createElement(
-                  'div',
-                  { className: 'col-md-8 col-centered' },
-                  _react2.default.createElement(
-                    'form',
-                    { onSubmit: this.sendMsg },
-                    _react2.default.createElement('input', { id: 'inputField', type: 'text', placeholder: 'type a message', onChange: this.handleMsgInput, className: 'form-control input-lg', autoComplete: 'off' }),
-                    _react2.default.createElement(
-                      'button',
-                      { type: 'submit', className: 'btn btn-success btn-lg hidden' },
-                      'Send'
-                    )
-                  )
-                )
-              )
-            )
-          )
-        );
-      } else if (!socketConnected) {
-        return _react2.default.createElement(
-          'div',
-          { className: 'container' },
-          _react2.default.createElement(
-            'div',
-            { className: 'row' },
-            _react2.default.createElement(
-              'div',
-              { className: 'col-md-8 col-centered text-center' },
-              active_users >= 5 && _react2.default.createElement(
-                'p',
-                { className: 'text-danger' },
-                'This room seems pretty popular. Join another room?',
-                _react2.default.createElement('br', null),
-                'Alternatively, create a new room with a slightly different title.'
-              ),
-              active_users < 5 && _react2.default.createElement(
-                'form',
-                { className: 'form-inline', onSubmit: this.connectToSocket },
-                _react2.default.createElement('input', { id: 'inputField', type: 'text', placeholder: 'pick a username', onChange: this.handleNameInput, className: 'form-control', autoComplete: 'off' }),
-                _react2.default.createElement(
-                  'button',
-                  { type: 'submit', className: 'hidden' },
-                  ' Join '
-                )
-              )
-            )
-          )
-        );
-      }
-    }
-  }]);
-
-  return ChatUI;
-}(_react.Component);
-
-exports.default = ChatUI;
-
-/***/ }),
-/* 81 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var WhosOnlineWidget = function (_Component) {
-  _inherits(WhosOnlineWidget, _Component);
-
-  function WhosOnlineWidget() {
-    _classCallCheck(this, WhosOnlineWidget);
-
-    return _possibleConstructorReturn(this, (WhosOnlineWidget.__proto__ || Object.getPrototypeOf(WhosOnlineWidget)).apply(this, arguments));
-  }
-
-  _createClass(WhosOnlineWidget, [{
-    key: "render",
-    value: function render() {
-      var _props = this.props,
-          users = _props.users,
-          currentUser = _props.currentUser,
-          colors = _props.colors;
-
-
-      var list = [];
-
-      if (users) {
-        list = users.map(function (user, ind) {
-          var name = currentUser === user ? user + " (me)" : user;
-          return _react2.default.createElement(
-            "span",
-            { className: "username-bubble", key: ind, style: { backgroundColor: colors[ind] } },
-            name
-          );
-        });
-      }
-
-      return _react2.default.createElement(
-        "div",
-        { id: "whos-online-widget", className: "col-md-8 col-centered text-center" },
-        list
-      );
-    }
-  }]);
-
-  return WhosOnlineWidget;
-}(_react.Component);
-
-exports.default = WhosOnlineWidget;
-
-/***/ }),
-/* 82 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(0);
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var PageNotFound = function (_Component) {
-  _inherits(PageNotFound, _Component);
-
-  function PageNotFound() {
-    _classCallCheck(this, PageNotFound);
-
-    return _possibleConstructorReturn(this, (PageNotFound.__proto__ || Object.getPrototypeOf(PageNotFound)).apply(this, arguments));
-  }
-
-  _createClass(PageNotFound, [{
-    key: "render",
-    value: function render() {
-      return _react2.default.createElement(
-        "div",
-        { className: "row" },
-        _react2.default.createElement(
-          "h1",
-          null,
-          "Oops, that's embarrassing"
-        ),
-        _react2.default.createElement(
-          "p",
-          null,
-          "Page not found!"
-        )
-      );
-    }
-  }]);
-
-  return PageNotFound;
-}(_react.Component);
-
-exports.default = PageNotFound;
 
 /***/ })
 /******/ ]);

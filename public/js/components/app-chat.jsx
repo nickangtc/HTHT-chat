@@ -1,10 +1,9 @@
-// TODO: updateOnlineWidget and render <WhosOnlineWidget />
 import React, { Component } from 'react';
 
-import WhosOnlineWidget from './WhosOnlineWidget.jsx';
+import OnlineStatusWidget from './widget-online-status.jsx';
 
 
-const ChatMessage = (props) => {
+const ChatBubble = (props) => {
   let panelClass = 'panel-default';
   if (props.msg.name === 'me') panelClass = 'panel-primary';
 
@@ -24,7 +23,7 @@ const ChatMessage = (props) => {
   );
 }
 
-export default class ChatUI extends Component {
+export default class ChatApp extends Component {
   constructor(props) {
     super(props);
 
@@ -187,7 +186,7 @@ export default class ChatUI extends Component {
     if (socketConnected && messages) {
       allMessages = messages.map(function (msg, ind) {
         return (
-          <ChatMessage key={ind} msg={msg} />
+          <ChatBubble key={ind} msg={msg} />
         )
       });
       setTimeout(this.autoScroll, 30);
@@ -197,7 +196,7 @@ export default class ChatUI extends Component {
         <div className="padding-bottom">
           <div className="container">
             <div className="row">
-              <WhosOnlineWidget users={users} currentUser={currentUser} colors={this.colors} />
+              <OnlineStatusWidget users={users} currentUser={currentUser} colors={this.colors} />
             </div>
             <div className="row">
               <div id="messages" className="col-md-8 col-centered">

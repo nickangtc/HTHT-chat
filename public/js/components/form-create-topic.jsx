@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 
-export default class NewTopicForm extends Component {
+export default class CreateTopicForm extends Component {
   constructor(props) {
     super(props);
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-export default class WhosOnlineWidget extends Component {
+export default class OnlineStatusWidget extends Component {
   render() {
     const {
       users,
