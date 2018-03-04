@@ -23607,9 +23607,11 @@ var TopicItem = function (_Component) {
   _createClass(TopicItem, [{
     key: 'render',
     value: function render() {
-      var topic = this.props.topic;
+      var _props = this.props,
+          topic = _props.topic,
+          createOrRedirect = _props.createOrRedirect;
 
-      var url = '/discuss/' + this.props.topic.id + '?topic=' + this.props.topic.title;
+
       var colors = ['#BEFFB3', '#3AE8B0', '#19AFD0', '#6967CE', '#FFB900', '#FD636B'];
       var badgeColor = colors[topic.active_users];
       var preventJoining = topic.active_users >= 5 ? true : false;
@@ -23636,7 +23638,9 @@ var TopicItem = function (_Component) {
         { className: 'list-group-item' },
         _react2.default.createElement(
           'a',
-          { href: url },
+          { className: 'clickable', onClick: function onClick() {
+              return createOrRedirect(topic.title);
+            } },
           topic.title,
           '\xA0',
           _react2.default.createElement(
@@ -23683,9 +23687,11 @@ var TopicsContainer = function (_Component2) {
     key: 'render',
     value: function render() {
       var topics = this.state.topics;
+      var createOrRedirect = this.props.createOrRedirect;
 
-      var topicsList = topics.map(function (topic) {
-        return _react2.default.createElement(TopicItem, { key: topic.id, topic: topic });
+
+      var topicsList = topics.map(function (topic, idx) {
+        return _react2.default.createElement(TopicItem, { key: idx, topic: topic, createOrRedirect: createOrRedirect });
       });
 
       return _react2.default.createElement(
@@ -23705,7 +23711,7 @@ var TopicsContainer = function (_Component2) {
             _react2.default.createElement(
               'h4',
               null,
-              'a room can only accommodate 5 people'
+              'have a heart to heart talk in a room with <= 5 humans'
             ),
             _react2.default.createElement(
               'div',
@@ -23728,13 +23734,33 @@ var TopicsContainer = function (_Component2) {
 var IndexPage = function (_Component3) {
   _inherits(IndexPage, _Component3);
 
-  function IndexPage() {
+  function IndexPage(props) {
     _classCallCheck(this, IndexPage);
 
-    return _possibleConstructorReturn(this, (IndexPage.__proto__ || Object.getPrototypeOf(IndexPage)).apply(this, arguments));
+    // Bindings
+    var _this4 = _possibleConstructorReturn(this, (IndexPage.__proto__ || Object.getPrototypeOf(IndexPage)).call(this, props));
+
+    _this4.createOrRedirect = _this4.createOrRedirect.bind(_this4);
+    return _this4;
   }
 
   _createClass(IndexPage, [{
+    key: 'createOrRedirect',
+    value: function createOrRedirect(topic) {
+      if (topic === '') return null;
+
+      $.ajax({
+        method: 'POST',
+        url: '/topics',
+        data: {
+          title: topic
+        },
+        success: function success(redirectPath) {
+          window.location.href += redirectPath;
+        }
+      });
+    }
+  }, {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
@@ -23754,7 +23780,7 @@ var IndexPage = function (_Component3) {
                 null,
                 'What\'s on your mind right now?'
               ),
-              _react2.default.createElement(_NewTopicForm2.default, null),
+              _react2.default.createElement(_NewTopicForm2.default, { createOrRedirect: this.createOrRedirect }),
               _react2.default.createElement(
                 'a',
                 { className: 'btn btn-default btn-block margin-top', onClick: function onClick() {
@@ -23765,7 +23791,7 @@ var IndexPage = function (_Component3) {
             )
           )
         ),
-        _react2.default.createElement(TopicsContainer, null)
+        _react2.default.createElement(TopicsContainer, { createOrRedirect: this.createOrRedirect })
       );
     }
   }]);
@@ -23800,13 +23826,13 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var IndexPage = function (_Component) {
-  _inherits(IndexPage, _Component);
+var NewTopicForm = function (_Component) {
+  _inherits(NewTopicForm, _Component);
 
-  function IndexPage(props) {
-    _classCallCheck(this, IndexPage);
+  function NewTopicForm(props) {
+    _classCallCheck(this, NewTopicForm);
 
-    var _this = _possibleConstructorReturn(this, (IndexPage.__proto__ || Object.getPrototypeOf(IndexPage)).call(this, props));
+    var _this = _possibleConstructorReturn(this, (NewTopicForm.__proto__ || Object.getPrototypeOf(NewTopicForm)).call(this, props));
 
     _this.state = {
       topic: '',
@@ -23820,7 +23846,7 @@ var IndexPage = function (_Component) {
     return _this;
   }
 
-  _createClass(IndexPage, [{
+  _createClass(NewTopicForm, [{
     key: 'componentWillMount',
     value: function componentWillMount() {
       var _this2 = this;
@@ -23846,23 +23872,7 @@ var IndexPage = function (_Component) {
     value: function handleCreate(e) {
       e.preventDefault();
 
-      if (this.state.topic === '') {
-        return this.setState({
-          error: 'Your room needs a topic!'
-        });
-      }
-
-      $.ajax({
-        method: 'POST',
-        url: '/topics',
-        data: {
-          title: this.state.topic
-        },
-        success: function success(redirectPath) {
-          console.log('Post successful', redirectPath);
-          window.location.href += redirectPath;
-        }
-      });
+      this.props.createOrRedirect(this.state.topic);
     }
   }, {
     key: 'findSimilarTopics',
@@ -23918,10 +23928,10 @@ var IndexPage = function (_Component) {
     }
   }]);
 
-  return IndexPage;
+  return NewTopicForm;
 }(_react.Component);
 
-exports.default = IndexPage;
+exports.default = NewTopicForm;
 
 /***/ }),
 /* 79 */
@@ -24252,7 +24262,9 @@ var ChatUI = function (_Component) {
               active_users >= 5 && _react2.default.createElement(
                 'p',
                 { className: 'text-danger' },
-                'This room seems pretty popular. Join another room?'
+                'This room seems pretty popular. Join another room?',
+                _react2.default.createElement('br', null),
+                'Alternatively, create a new room with a slightly different title.'
               ),
               active_users < 5 && _react2.default.createElement(
                 'form',

@@ -39,7 +39,7 @@ export default class ChatUI extends Component {
       socketConnected: false,
       socket: '',
       message: '',
-      messages: []
+      messages: [],
     };
 
     // Bindings
@@ -227,6 +227,8 @@ export default class ChatUI extends Component {
               { active_users >= 5 &&
                 <p className="text-danger">
                   This room seems pretty popular. Join another room?
+                  <br/>
+                  Alternatively, create a new room with a slightly different title.
                 </p>
               }
               { active_users < 5 &&

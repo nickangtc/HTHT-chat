@@ -24,6 +24,10 @@
   margin-left: 0;
 }
 
+.clickable {
+  cursor: pointer;
+}
+
 #whos-online-widget {
   min-height: 2.5em;
 }

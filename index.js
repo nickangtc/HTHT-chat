@@ -10,6 +10,7 @@ const server = http.createServer(app);
 const io = require('socket.io')(server);
 
 const { getRandomInt } = require('./public/js/util/math.js');
+const { permanentTopics } = require('./public/js/data/permanent-topics.js');
 
 // SERVER CONFIG
 app.use(express.static('./public'));
@@ -27,15 +28,19 @@ app.get('/', function (req, res) {
 
 app.get('/discuss/:id', function (req, res) {
   db.chatroom_topic.findOne({
-    where: { title: req.query.topic }
+    where: { id: req.params.id },
+    raw: true,
   }).then((chatroom) => {
-    res.render('chatroom', chatroom.dataValues);
+    res.render('chatroom', chatroom);
   });
 });
 
 app.get('/topics', function (req, res) {
-  db.chatroom_topic.findAll().then(function (topics) {
-    res.send(topics);
+  db.chatroom_topic.findAll({
+    attributes: [ 'title', 'active_users' ],
+    raw: true,
+  }).then(function (topics) {
+    res.send(topics.concat(permanentTopics));
   });
 });
 
@@ -50,13 +55,11 @@ app.post('/topics', function (req, res) {
     defaults: {
       active_users: 0,
     },
+    raw: true,
   }).spread(function (topic, created) {
-    let roomId = topic.dataValues.id;
-    let roomName = topic.dataValues.title;
-
     // construct redirect url and send response
-    const redirectPath = 'discuss/' + roomId + '?topic=' + encodeURIComponent(roomName);
-    console.log('Redirecting to', '/discuss/' + roomId + '?topic=' + roomName);
+    const redirectPath = 'discuss/' + topic.id + '?topic=' + encodeURIComponent(topic.title);
+    console.log('Redirecting to', redirectPath);
     res.send(redirectPath);
   });
 });

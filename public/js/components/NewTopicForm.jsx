@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 
-export default class IndexPage extends Component {
+export default class NewTopicForm extends Component {
   constructor(props) {
     super(props);
 
@@ -37,23 +37,7 @@ export default class IndexPage extends Component {
   handleCreate(e) {
     e.preventDefault();
 
-    if (this.state.topic === '') {
-      return this.setState({
-        error: 'Your room needs a topic!',
-      });
-    }
-
-    $.ajax({
-      method: 'POST',
-      url: '/topics',
-      data: {
-        title: this.state.topic
-      },
-      success: function (redirectPath) {
-        console.log('Post successful', redirectPath);
-        window.location.href += redirectPath;
-      }
-    });
+    this.props.createOrRedirect(this.state.topic);
   }
 
   findSimilarTopics(searchTerm) {
