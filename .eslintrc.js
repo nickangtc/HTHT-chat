@@ -14,6 +14,19 @@ const config = {
     'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
     'no-underscore-dangle': 'off',
     'import/no-unresolved': 'off',
+    // react lifecycle methods do not need to use `this`
+    'class-methods-use-this': ['error', {
+      'exceptMethods': [
+        'render',
+        'componentWillMount',
+        'componentDidMount',
+        'componentWillReceiveProps',
+        'shouldComponentUpdate',
+        'componentWillUpdate',
+        'componentDidUpdate',
+        'componentWillUnmount',
+      ]
+    }],
   },
 
   // Defines other global variables

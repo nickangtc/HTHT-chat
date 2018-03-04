@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import CreateTopicForm from './form-create-topic.jsx';
-import { smoothScroll } from '../util/ui.js';
+import { smoothScroll } from '../util/ui';
 
 
 class TopicItem extends Component {
@@ -13,7 +14,7 @@ class TopicItem extends Component {
 
     const colors = ['#BEFFB3', '#3AE8B0', '#19AFD0', '#6967CE', '#FFB900', '#FD636B'];
     const badgeColor = colors[topic.active_users];
-    const preventJoining = topic.active_users >= 5 ? true : false;
+    const preventJoining = topic.active_users >= 5;
 
     if (preventJoining) {
       return (
@@ -39,6 +40,10 @@ class TopicItem extends Component {
     );
   }
 }
+TopicItem.propTypes = {
+  topic: PropTypes.object.isRequired,
+  createOrRedirect: PropTypes.func.isRequired,
+};
 
 class TopicsContainer extends Component {
   constructor(props) {
@@ -46,7 +51,7 @@ class TopicsContainer extends Component {
 
     this.state = {
       topics: [],
-    }
+    };
   }
 
   componentWillMount() {
@@ -61,11 +66,8 @@ class TopicsContainer extends Component {
     const { topics } = this.state;
     const { createOrRedirect } = this.props;
 
-    const topicsList = topics.map((topic, idx) => {
-      return (
-        <TopicItem key={idx} topic={topic} createOrRedirect={createOrRedirect} />
-      )
-    });
+    const topicsList = topics.map((topic, idx) =>
+      <TopicItem key={idx} topic={topic} createOrRedirect={createOrRedirect} />);
 
     return (
       <div id="topics-list" className="container centralised">
@@ -75,7 +77,7 @@ class TopicsContainer extends Component {
               Ongoing conversations
             </h2>
             <h4>
-              { `have a heart to heart talk in a room with <= 5 humans` }
+              { 'have a heart to heart talk in a room with <= 5 humans' }
             </h4>
             <div className="panel panel-default margin-top">
               <ul className="list-group">
@@ -90,15 +92,8 @@ class TopicsContainer extends Component {
 }
 
 export default class IndexPage extends Component {
-  constructor(props) {
-    super(props);
-
-    // Bindings
-    this.createOrRedirect = this.createOrRedirect.bind(this);
-  }
-
-  createOrRedirect(topic) {
-    if (topic === '') return null;
+  static createOrRedirect(topic) {
+    if (topic === '') return;
 
     $.ajax({
       method: 'POST',
@@ -106,9 +101,9 @@ export default class IndexPage extends Component {
       data: {
         title: topic,
       },
-      success: function (redirectPath) {
+      success: (redirectPath) => {
         window.location.href += redirectPath;
-      }
+      },
     });
   }
 
@@ -118,16 +113,19 @@ export default class IndexPage extends Component {
         <div className="container really centralised">
           <div className="row">
             <div className="col-md-6 col-centered text-center">
-              <h3>What's on your mind right now?</h3>
-              <CreateTopicForm createOrRedirect={this.createOrRedirect} />
+              <h3>What&apos;s on your mind right now?</h3>
+              <CreateTopicForm createOrRedirect={IndexPage.createOrRedirect} />
               <a className="btn btn-default btn-block margin-top" onClick={() => smoothScroll('topics-list')}>
                 join an existing conversation
               </a>
             </div>
           </div>
         </div>
-        <TopicsContainer createOrRedirect={this.createOrRedirect} />
+        <TopicsContainer createOrRedirect={IndexPage.createOrRedirect} />
       </div>
     );
   }
 }
+TopicsContainer.propTypes = {
+  createOrRedirect: PropTypes.func.isRequired,
+};

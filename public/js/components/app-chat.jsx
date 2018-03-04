@@ -1,27 +1,37 @@
+/* global io, active_users */
+// global 'io' via CDN script, 'active_users' via EJS view
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import OnlineStatusWidget from './widget-online-status.jsx';
+import { autoScroll } from '../util/ui';
 
 
 const ChatBubble = (props) => {
   let panelClass = 'panel-default';
-  if (props.msg.name === 'me') panelClass = 'panel-primary';
+  if (props.message.name === 'me') panelClass = 'panel-primary';
 
   return (
     <div className="row chat-bubble">
       <div className="col-md-12">
         <div className={`panel ${panelClass}`}>
           <div className="panel-body">
-            { props.msg.name !== 'me' &&
-              <small>{props.msg.name}</small>
+            { props.message.name !== 'me' &&
+              <small>{props.message.name}</small>
             }
-            <p>{props.msg.msg}</p>
+            <p>{props.message.msg}</p>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
+ChatBubble.propTypes = {
+  message: PropTypes.shape({
+    msg: PropTypes.string,
+    name: PropTypes.string,
+  }).isRequired,
+};
 
 export default class ChatApp extends Component {
   constructor(props) {
@@ -51,7 +61,6 @@ export default class ChatApp extends Component {
     this.handleNameInput = this.handleNameInput.bind(this);
     this.connectToSocket = this.connectToSocket.bind(this);
     this.updateOnlineWidget = this.updateOnlineWidget.bind(this);
-    this.autoScroll = this.autoScroll.bind(this);
   }
 
   componentWillMount() {
@@ -62,8 +71,8 @@ export default class ChatApp extends Component {
     this.setState({ chatroomID: id });
 
     // on any keypress, autofocus to input field
-    $(document).on("keypress", function() {
-      $("#inputField").focus();
+    $(document).on('keypress', () => {
+      $('#inputField').focus();
     });
   }
 
@@ -72,8 +81,6 @@ export default class ChatApp extends Component {
     socket.on('newcomer', this.userJoined);
     socket.on('left', this.userLeft);
     socket.on('online', this.updateOnlineWidget);
-    socket.on('connected', function () { console.log('Connected to Chat Socket') });
-    socket.on('disconnect', function () { console.log('Disconnected from Chat Socket') });
   }
 
   messageRecieve(msg) {
@@ -89,7 +96,7 @@ export default class ChatApp extends Component {
     this.setState({
       messages: [
         ...this.state.messages,
-        { name: '', msg: user + ' joined' },
+        { name: '', msg: `${user} joined` },
       ],
     });
   }
@@ -98,7 +105,7 @@ export default class ChatApp extends Component {
     this.setState({
       messages: [
         ...this.state.messages,
-        { name: '', msg: user + ' left' },
+        { name: '', msg: `${user} left` },
       ],
     });
   }
@@ -112,7 +119,7 @@ export default class ChatApp extends Component {
     const { socket, message } = this.state;
 
     // ignore empty chat message submissions
-    if (message === '') return null;
+    if (message === '') return;
 
     socket.emit('chat', message);
 
@@ -138,38 +145,29 @@ export default class ChatApp extends Component {
       chatroomID,
     } = this.state;
 
-    if (username === '') return null;
+    if (username === '') return;
 
     // create socket connection to server
     const socket = io(window.location.host);
 
     // init socket on client to listen for and emit events
     this.setState({
+      socket,
       socketConnected: true,
-      socket: socket,
       currentUser: this.state.username,
     });
     this.initSocketListeners(socket);
 
     // emit "join or create room" event
     socket.emit('join or create room', {
-      username: this.state.username,
-      chatroomID: this.state.chatroomID
+      username,
+      chatroomID,
     });
   }
 
   updateOnlineWidget(activeConnections) {
     const users = activeConnections.map(conn => conn.user);
-    this.setState({ users: users });
-  }
-
-  autoScroll() {
-    const messagesDiv = $('#messages');
-    if (messagesDiv) {
-      messagesDiv.stop().animate({
-        scrollTop: messagesDiv[0].scrollHeight
-      }, 1500);
-    }
+    this.setState({ users });
   }
 
   render() {
@@ -182,13 +180,11 @@ export default class ChatApp extends Component {
     let allMessages = null;
 
     if (socketConnected && messages) {
-      allMessages = messages.map(function (msg, ind) {
-        return (
-          <ChatBubble key={ind} msg={msg} />
-        )
-      });
-      setTimeout(this.autoScroll, 30);
+      allMessages = messages.map((msg, ind) => <ChatBubble key={ind} message={msg} />);
+      setTimeout(() => autoScroll('messages'), 30);
     }
+
+    // socket connected
     if (socketConnected) {
       return (
         <div className="padding-bottom">
@@ -207,7 +203,10 @@ export default class ChatApp extends Component {
               <div className="row">
                 <div className="col-md-8 col-centered">
                   <form onSubmit={this.sendMsg}>
-                    <input id="inputField" type="text" placeholder="type a message" onChange={this.handleMsgInput} className="form-control input-lg" autoComplete='off' />
+                    <input
+                      id="inputField" type="text" placeholder="type a message"
+                      className="form-control input-lg"
+                      onChange={this.handleMsgInput} autoComplete='off' />
                     <button type="submit" className="btn btn-success btn-lg hidden">Send</button>
                   </form>
                 </div>
@@ -216,28 +215,31 @@ export default class ChatApp extends Component {
           </div>
         </div>
       );
-    } else if (!socketConnected){
-      return (
-        <div className="container">
-          <div className="row">
-            <div className="col-md-8 col-centered text-center">
-              { active_users >= 5 &&
-                <p className="text-danger">
-                  This room seems pretty popular. Join another room?
-                  <br/>
-                  Alternatively, create a new room with a slightly different title.
-                </p>
-              }
-              { active_users < 5 &&
-                <form className="form-inline" onSubmit={this.connectToSocket}>
-                  <input id="inputField" type="text" placeholder="pick a username" onChange={this.handleNameInput} className="form-control" autoComplete='off' />
-                  <button type="submit" className="hidden"> Join </button>
-                </form>
-              }
-            </div>
+    }
+
+    // socket not connected yet
+    return (
+      <div className="container">
+        <div className="row">
+          <div className="col-md-8 col-centered text-center">
+            { active_users >= 5 && // eslint-disable-line camelcase
+              <p className="text-danger">
+                This room seems pretty popular. Join another room?
+                <br/>
+                Alternatively, create a new room with a slightly different title.
+              </p>
+            }
+            { active_users < 5 && // eslint-disable-line camelcase
+              <form className="form-inline" onSubmit={this.connectToSocket}>
+                <input id="inputField" type="text" placeholder="pick a username"
+                  className="form-control"
+                  onChange={this.handleNameInput} autoComplete='off' />
+                <button type="submit" className="hidden"> Join </button>
+              </form>
+            }
           </div>
         </div>
-      )
-    }
+      </div>
+    );
   }
 }

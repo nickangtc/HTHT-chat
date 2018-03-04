@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 
 export default class CreateTopicForm extends Component {
@@ -9,7 +10,7 @@ export default class CreateTopicForm extends Component {
       topic: '',
       topics: [],
       error: false,
-    }
+    };
 
     // Bindings
     this.handleTopicInput = this.handleTopicInput.bind(this);
@@ -18,15 +19,13 @@ export default class CreateTopicForm extends Component {
   }
 
   componentWillMount() {
-    $(document).on("keypress", function() {
-      $("#topic-input").focus();
-    });
+    $(document).on('keypress', () => $('#topic-input').focus());
     $.ajax({
       method: 'GET',
       url: '/topics',
-      success: data => {
+      success: (data) => {
         this.setState({ topics: data });
-      }
+      },
     });
   }
 
@@ -46,17 +45,15 @@ export default class CreateTopicForm extends Component {
     if (this.state.topics) {
       for (let i = 0; i < this.state.topics.length; i++) {
         const topic = this.state.topics[i].title.toLowerCase();
-        if ( topic.includes(term) ) {
+        if (topic.includes(term)) {
           result.push(this.state.topics[i].title);
         }
       }
-      const similarTopics = result.map(function (topic, index) {
-        return (
-          <option value={topic} key={index} />
-        );
-      });
+      const similarTopics = result.map((topic, index) => <option value={topic} key={index} />);
       return similarTopics;
-    } else { return '' }
+    }
+
+    return '';
   }
 
   render() {
@@ -71,10 +68,15 @@ export default class CreateTopicForm extends Component {
           </div>
         }
         <div className="form-group">
-          <input id="topic-input" list="similar-topics" type="text" onChange={this.handleTopicInput} placeholder="how will AI co-exist with humanity 20 years from now?" className="form-control"/>
+          <input id="topic-input" list="similar-topics" type="text"
+            onChange={this.handleTopicInput} className="form-control"
+            placeholder="how will AI co-exist with humanity 20 years from now?" />
         </div>
         <button type="submit" className="btn btn-success btn-lg btn-block">proceed to room</button>
       </form>
     );
   }
 }
+CreateTopicForm.propTypes = {
+  createOrRedirect: PropTypes.func.isRequired,
+};

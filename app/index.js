@@ -1,17 +1,17 @@
-'use strict';
-
 const express = require('express');
 const path = require('path');
-const db = require('./models');
 const http = require('http');
-const app = express();
+const db = require('./models');
 const bodyParser = require('body-parser');
-const port = process.env.PORT || 3000;
-const server = http.createServer(app);
-const io = require('socket.io')(server);
+const socketIO = require('socket.io');
 
 const { permanentTopics } = require('./data/permanent-topics.js');
 const dbHelper = require('./util/db-helpers.js');
+
+const app = express();
+const port = process.env.PORT || 3000;
+const server = http.createServer(app);
+const io = socketIO(server);
 
 
 /**
@@ -22,9 +22,9 @@ const dbHelper = require('./util/db-helpers.js');
 app.use(express.static('./public'));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '/views'));
-app.use(bodyParser.json());       // to support JSON-encoded bodies
-app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-  extended: true
+app.use(bodyParser.json()); // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
+  extended: true,
 }));
 
 /**
@@ -32,11 +32,11 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
  * Routes
  * ================================
  */
-app.get('/', function (req, res) {
+app.get('/', (req, res) => {
   res.render('index');
 });
 
-app.get('/discuss/:id', function (req, res) {
+app.get('/discuss/:id', (req, res) => {
   db.chatroom_topic.findOne({
     where: { id: req.params.id },
     raw: true,
@@ -45,31 +45,31 @@ app.get('/discuss/:id', function (req, res) {
   });
 });
 
-app.get('/topics', function (req, res) {
+app.get('/topics', (req, res) => {
   db.chatroom_topic.findAll({
-    attributes: [ 'title', 'active_users' ],
+    attributes: ['title', 'active_users'],
     raw: true,
-  }).then(function (topics) {
+  }).then((topics) => {
     res.send(topics.concat(permanentTopics));
   });
 });
 
-app.post('/topics', function (req, res) {
+app.post('/topics', (req, res) => {
   const newTopic = req.body;
 
   db.chatroom_topic.findOrCreate({
     where: { title: newTopic.title },
     defaults: { active_users: 0 },
     raw: true,
-  }).spread(function (topic, created) {
-    const redirectPath = 'discuss/' + topic.id + '?topic=' + encodeURIComponent(topic.title);
-    console.log('Redirecting to', redirectPath);
+  }).spread((topic) => {
+    const redirectPath = `discuss/${topic.id}?topic=${encodeURIComponent(topic.title)}`;
     res.send(redirectPath);
   });
 });
 
 // start server listening
 server.listen(port, () => {
+  // eslint-disable-next-line no-console
   console.log('Server listening on port: ', server.address().port);
 });
 
@@ -82,41 +82,41 @@ server.listen(port, () => {
 // listen for a socket io connection event
 io.on('connection', (socket) => {
   // new connection, save the socket
-  console.log("Creating new connection.");
   db.connections.create({
-    socketID: socket.id
+    socketID: socket.id,
   });
 
-  console.log(`\n## New connection (${socket.id}).`)
+  // eslint-disable-next-line no-console
+  console.log(`\n## New connection (${socket.id}).`);
 
   // listen for "join or create room" event
-  socket.on('join or create room', function (data) {
+  socket.on('join or create room', (data) => {
     socket.join(data.chatroomID);
 
     // attach the new user and her chatroomID to the connection object
     db.connections.update({
       user: data.username,
-      chatroomID: data.chatroomID
+      chatroomID: data.chatroomID,
     }, {
       where: { socketID: socket.id },
       returning: true,
-      plain: true
-    }).then(function (newConnection) {
+      plain: true,
+    }).then((newConnection) => {
       const connection = newConnection[1].dataValues;
-
-      // emit welcome message to new user
-      socket.emit('connected', connection);
 
       // broadcast their arrival to everyone else
       dbHelper.getActiveConnections(data.chatroomID, (activeConnections) => {
         io.to(connection.chatroomID).emit('newcomer', data.username);
         io.to(connection.chatroomID).emit('online', activeConnections);
-        console.log(`## ${connection.user} joined the chatroom (${connection.chatroomID}).`)
+        // eslint-disable-next-line no-console
+        console.log(`## ${connection.user} joined the chatroom (${connection.chatroomID}).`);
       });
 
       db.chatroom_topic.findOne({
         where: { id: connection.chatroomID },
-      }).then(function (chatroom) {
+      }).then((chatroom) => {
+        // reassignment is intended with Sequelize instance
+        // eslint-disable-next-line no-param-reassign
         chatroom.active_users += 1;
         chatroom.save();
       });
@@ -129,21 +129,19 @@ io.on('connection', (socket) => {
     let deleted = null;
 
     db.connections.findOne({
-      where: { socketID: socket.id }
-    }).then(function (connection) {
+      where: { socketID: socket.id },
+    }).then((connection) => {
       // clone deleted instance for use later after deletion
       deleted = Object.assign({}, connection.dataValues);
 
       // ensure connection is deleted from DB before returning response
       db.connections.destroy({
-        where: { socketID: socket.id }
-      }).then(function () {
-        console.log(`Connection ${socket.id} deleted from db`);
-
+        where: { socketID: socket.id },
+      }).then(() => {
         db.chatroom_topic.findOne({
           where: { id: deleted.chatroomID },
-        }).then(function (chatroom) {
-          chatroom.active_users -= 1;
+        }).then((chatroom) => {
+          chatroom.active_users -= 1; // eslint-disable-line no-param-reassign
           chatroom.save();
         });
 
@@ -156,9 +154,11 @@ io.on('connection', (socket) => {
           if (activeConnections.length === 0) {
             db.chatroom_topic.destroy({ where: { id: deleted.chatroomID } });
           }
-          console.log(`## ${deleted.user}(${deleted.id}) disconnected. Remaining: ${activeConnections.length}.`)
+          // eslint-disable-next-line no-console
+          console.log(`## ${deleted.user}(${deleted.id}) disconnected.\
+            Connections remaining: ${activeConnections.length}.`);
         });
-      })
+      });
     });
     socket.disconnect();
   });
@@ -166,11 +166,10 @@ io.on('connection', (socket) => {
   // listen for "chat" event
   socket.on('chat', (msg) => {
     db.connections.findOne({
-      where: { socketID: socket.id }
-    }).then(function (connection) {
+      where: { socketID: socket.id },
+    }).then((connection) => {
       // broadcast to other users
       socket.broadcast.to(connection.chatroomID).emit('chat', { message: msg, user: connection.user });
-      console.log(`## ${connection.user} said: ${msg}`);
     });
   });
-})
+});
