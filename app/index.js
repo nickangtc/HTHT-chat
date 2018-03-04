@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require('express');
+const path = require('path');
 const db = require('./models');
 const http = require('http');
 const app = express();
@@ -9,19 +10,28 @@ const port = process.env.PORT || 3000;
 const server = http.createServer(app);
 const io = require('socket.io')(server);
 
-const { getRandomInt } = require('./public/js/util/math.js');
-const { permanentTopics } = require('./public/js/data/permanent-topics.js');
+const { permanentTopics } = require('./data/permanent-topics.js');
+const dbHelper = require('./util/db-helpers.js');
 
-// SERVER CONFIG
+
+/**
+ * ================================
+ * Config
+ * ================================
+ */
 app.use(express.static('./public'));
 app.set('view engine', 'ejs');
-
+app.set('views', path.join(__dirname, '/views'));
 app.use(bodyParser.json());       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
 
-// SERVER ROUTES
+/**
+ * ================================
+ * Routes
+ * ================================
+ */
 app.get('/', function (req, res) {
   res.render('index');
 });
@@ -44,58 +54,31 @@ app.get('/topics', function (req, res) {
   });
 });
 
-// Create new chatroom topic
 app.post('/topics', function (req, res) {
   const newTopic = req.body;
 
   db.chatroom_topic.findOrCreate({
-    where: {
-      title: newTopic.title,
-    },
-    defaults: {
-      active_users: 0,
-    },
+    where: { title: newTopic.title },
+    defaults: { active_users: 0 },
     raw: true,
   }).spread(function (topic, created) {
-    // construct redirect url and send response
     const redirectPath = 'discuss/' + topic.id + '?topic=' + encodeURIComponent(topic.title);
     console.log('Redirecting to', redirectPath);
     res.send(redirectPath);
   });
 });
 
-
-// SOCKET.IO
-
-function allConnections () {
-  db.connections.findAll().then(function (connections) {
-    return connections;
-  });
-}
-
-function deleteConnection (id) {
-  db.connections.destroy({
-    where: { socketID: id }
-  }).then(function () {
-    console.log(`Connection ${id} deleted from db`);
-    return true;
-  });
-}
-
-function getActiveConnections(roomId, done) {
-  db.connections.findAll({
-    where: { chatroomID: roomId }
-  }).then(function (connections) {
-    const activeConnections = connections.map(conn => conn.dataValues);
-    done(activeConnections);
-  });
-}
-
 // start server listening
 server.listen(port, () => {
-  console.log('Server listening on port: ', server.address().port)
+  console.log('Server listening on port: ', server.address().port);
 });
 
+/**
+ * ================================
+ * Web socket (socket.io)
+ * Event handlers
+ * ================================
+ */
 // listen for a socket io connection event
 io.on('connection', (socket) => {
   // new connection, save the socket
@@ -125,7 +108,7 @@ io.on('connection', (socket) => {
       socket.emit('connected', connection);
 
       // broadcast their arrival to everyone else
-      getActiveConnections(data.chatroomID, (activeConnections) => {
+      dbHelper.getActiveConnections(data.chatroomID, (activeConnections) => {
         io.to(connection.chatroomID).emit('newcomer', data.username);
         io.to(connection.chatroomID).emit('online', activeConnections);
         console.log(`## ${connection.user} joined the chatroom (${connection.chatroomID}).`)
@@ -164,7 +147,7 @@ io.on('connection', (socket) => {
           chatroom.save();
         });
 
-        getActiveConnections(deleted.chatroomID, (activeConnections) => {
+        dbHelper.getActiveConnections(deleted.chatroomID, (activeConnections) => {
           // broadcast who left and current active users
           io.to(deleted.chatroomID).emit('left', deleted.user);
           io.to(deleted.chatroomID).emit('online', activeConnections);

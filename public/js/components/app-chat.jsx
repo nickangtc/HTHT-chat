@@ -151,8 +151,6 @@ export default class ChatApp extends Component {
     });
     this.initSocketListeners(socket);
 
-    console.log('Joining chatroom', this.state.chatroomID, 'with name: ', this.state.username)
-
     // emit "join or create room" event
     socket.emit('join or create room', {
       username: this.state.username,

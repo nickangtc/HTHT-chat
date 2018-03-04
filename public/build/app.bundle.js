@@ -23573,7 +23573,7 @@ var withRouter = function withRouter(Component) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-// animate scroll to specified element on page w/o '#' in resultant URL
+// Animate scroll to specified element on page w/o '#' in resultant URL
 function smoothScroll(elementId) {
   var el = $('#' + elementId);
   if (el.length === 0) return null;
@@ -24054,8 +24054,6 @@ var ChatApp = function (_Component) {
         currentUser: this.state.username
       });
       this.initSocketListeners(socket);
-
-      console.log('Joining chatroom', this.state.chatroomID, 'with name: ', this.state.username);
 
       // emit "join or create room" event
       socket.emit('join or create room', {

@@ -1,4 +1,4 @@
-// animate scroll to specified element on page w/o '#' in resultant URL
+// Animate scroll to specified element on page w/o '#' in resultant URL
 function smoothScroll(elementId) {
   const el = $(`#${elementId}`);
   if (el.length === 0) return null;
